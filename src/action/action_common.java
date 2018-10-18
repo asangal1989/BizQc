@@ -19,13 +19,14 @@ import com.aventstack.extentreports.markuputils.MarkupHelper;
 import elements_ui.element_locator;
 import global_utility.global_variables;
 import global_utility.handle_ajax_call;
+import gs_utilities.runner;
 
 public class action_common extends global_variables
 {
 	element_locator element_loc=new element_locator();
 	By element_locator=null;
 	int Status=0;	
-	public int URL(String url) throws Exception
+	public int URL(String url,String templete_ID,gs_utilities.runner gs_runner) throws Exception
 	{				
 		Driver.get(url);
 		handle_ajax_call.HandleAjaxCall();
@@ -43,6 +44,22 @@ public class action_common extends global_variables
 
 		}
 		
+		try
+		{
+			Driver.findElement(By.xpath("//div[normalize-space(@class) = 'text-align-center landing_list_contact']"));
+			Driver.findElement(By.xpath("//a[normalize-space(@dataid) = 'link_orderOnline']")).click();
+			handle_ajax_call.HandleAjaxCall();
+			Thread.sleep(2000);
+			Driver.findElement(By.xpath("//a[normalize-space(@class) = 'ubtn blackbtn y-resUrl']")).click();
+			handle_ajax_call.HandleAjaxCall();
+			Thread.sleep(3000);
+			gs_runner.setTemplateUrl(url+"home.html");
+			
+		}
+		catch(Exception e)
+		{
+			
+		}
 			
 		log_system.info("URL opened successfully");
 		Status=1;		

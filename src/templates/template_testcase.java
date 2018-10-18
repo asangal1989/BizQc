@@ -40,11 +40,11 @@ public class template_testcase extends global_variables{
 	}
 	
 	
-	public int GetURL(String url,String Client)
+	public int GetURL(String url,String Client,String templete_ID, gs_utilities.runner gs_runner)
 	{
 		try 
 		{			
-			Status=common_action.URL(url);
+			Status=common_action.URL(url,templete_ID,gs_runner);
 		} catch (Exception e) {
 			log_system.error("Execution failed to get url "+url);
 			Status=0;

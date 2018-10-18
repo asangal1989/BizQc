@@ -46,8 +46,9 @@ public class action_menu extends global_variables {
 		
 			ArrayList<String> menuList_collection=new ArrayList<String>();
 			for(WebElement menu:menuList)
-			{
-				menuList_collection.add(menu.getText().trim().toLowerCase().replace(" ", "_"));
+			{				
+				if(menu.getAttribute("href").contains("javascript"))
+					menuList_collection.add(menu.getText().trim().toLowerCase().replace(" ", "_"));
 			}
 
 		for(String menutxt:menuList_collection)

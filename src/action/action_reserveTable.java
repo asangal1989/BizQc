@@ -32,11 +32,11 @@ public class action_reserveTable extends global_variables{
 		
 		ArrayList<String> errorlog=new ArrayList<String>();
 		Actions act=new Actions(Driver);
-		
+		WebElement ele_reserveATable=null;
 		if(Driver.getPageSource().contains("reserve a table"))
 		{
 			WebElement hamburger=Driver.findElement(By.xpath("//i[normalize-space(@class) = 'i_hamburger']"));
-			WebElement ele_reserveATable=null;		
+					
 			if(hamburger.isDisplayed())
 			{
 				try {
@@ -118,12 +118,13 @@ public class action_reserveTable extends global_variables{
 											else
 											{
 												Thread.sleep(2000);
-												if(SelectTimeSlot("ByID", "timepicker1")!=1)
+												if(SelectTimeSlot("ByID", "timepicker1")!=1 && SelectTimeSlot("ByID", "timepicker1")!=2)
 												{
+													
 													errorlog.add("User is not able to select time slot");
 													log_system.error("User is not able to select time slot");
 												}
-												else
+												else if(SelectTimeSlot("ByID", "timepicker1")!=2 && SelectTimeSlot("ByID", "timepicker1")!=0)
 												{
 													if(common_action.VerifyElement("ByID","btnbook")!=1)
 													{
@@ -441,6 +442,13 @@ public class action_reserveTable extends global_variables{
 		{
 			Status=1;
 		}
+		else
+		{
+			if(ele_reserveATable.isDisplayed())
+			{
+				Driver.findElement(By.xpath("//a[normalize-space(@class) = 'i_close close']")).click();
+			}
+		}
 		return Status;		
 	}
 
@@ -544,7 +552,7 @@ public class action_reserveTable extends global_variables{
 	
 	public int SelectTimeSlot(String ElementKey, String ElementSelector)
 	{				
-		try {
+		
 			element_locator element_loc=new element_locator();
 			By element_locator=null;
 			element_locator=element_loc.getElement(ElementKey, ElementSelector);
@@ -552,25 +560,35 @@ public class action_reserveTable extends global_variables{
 			act.moveToElement(Driver.findElement(element_locator)).build().perform();
 			WebDriverWait wait = new WebDriverWait(Driver, 20);
 			wait.until(ExpectedConditions.presenceOfElementLocated(element_locator));		
-			Driver.findElement(element_locator).click();
-			Thread.sleep(2000);
-			WebElement dateselector=Driver.findElement(By.xpath("//ul[normalize-space(@class) = 't_timepicker unstyled clearfix']"));
-			List<WebElement> dates_list=dateselector.findElements(By.tagName("li"));
-			ArrayList<WebElement> activeTimeSlot=new ArrayList<WebElement>();
-			for(WebElement all_dates:dates_list)
-			{			
-					activeTimeSlot.add(all_dates);			
+			try {
+				Driver.findElement(element_locator).click();
+			} catch (Exception e) {
+				Status=2;
+			}
+			if(Status!=2)
+			{
+				try {
+					Thread.sleep(2000);
+					WebElement dateselector=Driver.findElement(By.xpath("//ul[normalize-space(@class) = 't_timepicker unstyled clearfix']"));
+					List<WebElement> dates_list=dateselector.findElements(By.tagName("li"));
+					ArrayList<WebElement> activeTimeSlot=new ArrayList<WebElement>();
+					for(WebElement all_dates:dates_list)
+					{			
+							activeTimeSlot.add(all_dates);			
+					}
+					
+					Random rdm=new Random();
+					int index=rdm.nextInt(activeTimeSlot.size());		
+					WebElement selectableTimeSlot=activeTimeSlot.get(index);		
+					act.moveToElement(selectableTimeSlot).build().perform();
+					selectableTimeSlot.click();				
+					Status=1;
+				} catch (Exception e) {
+					Status=0;				
+					}
 			}
 			
-			Random rdm=new Random();
-			int index=rdm.nextInt(activeTimeSlot.size());		
-			WebElement selectableTimeSlot=activeTimeSlot.get(index);		
-			act.moveToElement(selectableTimeSlot).build().perform();
-			selectableTimeSlot.click();				
-			Status=1;
-		} catch (InterruptedException e) {
-			Status=0;
-		}
+		
 		return Status;
 	}
 	

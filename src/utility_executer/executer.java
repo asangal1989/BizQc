@@ -44,14 +44,15 @@ public class executer extends global_variables{
 			Status=testcase.OpenBrowser(Environment,Browser,client);
 			log_system.info("Status of Open Browser "+Status);
 			log_system.info("Open URL "+ url);
-			Status=testcase.GetURL(url,client);
+			Status=testcase.GetURL(url,client,templete_ID,gs_runner);
+			url=gs_runner.getTemplateUrl();
 			log_system.info("Status of get url "+Status);
 			log_system.info("********************  Verify SSL ************************ ");
 			Status=testcase.VerifySSL(client);
 			log_system.info("Status of Verify SSL "+Status);
 			log_system.info("********************  Consol Error ************************ ");
 			Status=testcase.ConsolError(client);
-			log_system.info("Status of Consol Error "+Status);
+			log_system.info("Status of Console Error "+Status);
 			log_system.info("********************  Verify Menu ************************ ");
 			Status=testcase.VerifyMenu(url,client);
 			log_system.info("Status of Verify Menu "+Status);
@@ -125,7 +126,7 @@ public class executer extends global_variables{
 			Status=testcase.VerifyDeliveryTime(client, City,"30");
 			log_system.info("Status of Verify Delivery Time "+Status);
 			log_system.info("******************** Closing Browser ************************ ");			
-			testcase.CloseBrowser(client);			
+			testcase.CloseBrowser(client);
 			log_system.info("Execution Complete for template "+ templateNumber);
 			log_system.info("Execution Complete for client "+ client);
 			reports.flush();
