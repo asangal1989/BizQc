@@ -45,7 +45,7 @@ public class executer extends global_variables{
 			log_system.info("Status of Open Browser "+Status);
 			log_system.info("Open URL "+ url);
 			Status=testcase.GetURL(url,client,templete_ID,gs_runner);
-			/*url=gs_runner.getTemplateUrl();
+			url=gs_runner.getTemplateUrl();
 			log_system.info("Status of get url "+Status);
 			log_system.info("********************  Verify SSL ************************ ");
 			Status=testcase.VerifySSL(client);
@@ -64,7 +64,7 @@ public class executer extends global_variables{
 			log_system.info("Status of Verify Gallery "+Status);
 			log_system.info("********************  Verify Menu Item ************************ ");
 			Status=testcase.VerifyMenuItem(client);
-			log_system.info("Status of Verify Menu Item "+Status);*/
+			log_system.info("Status of Verify Menu Item "+Status);
 			log_system.info("******************** Add Product ************************ ");
 			Status=testcase.AddProduct(client);
 			log_system.info("Status of Add Product "+Status);

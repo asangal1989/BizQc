@@ -34,6 +34,7 @@ public class template_testcase extends global_variables{
 			Status=action_openBrowser.OpenBrowser(Environment, Browser);			
 		} catch (IOException e) {
 			log_system.error("Execution failed:  open Browsers "+ Browser+" for Environment "+ Environment);
+			log_system.error(e.getMessage());
 			Status=0;
 		}
 		getscreenshot.screenshot(path_lib_screenshot+Client+"\\", Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -49,6 +50,7 @@ public class template_testcase extends global_variables{
 			Status=common_action.URL(url,templete_ID,gs_runner);
 		} catch (Exception e) {
 			log_system.error("Execution failed to get url "+url);
+			log_system.error(e.getMessage());
 			Status=0;
 		}
 		getscreenshot.screenshot(path_lib_screenshot+Client+"\\", Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -62,6 +64,7 @@ public class template_testcase extends global_variables{
 			Status=common_action.VerifySSL();
 		} catch (Exception e) {
 			log_system.error("Execution failed to verify SSL ");
+			log_system.error(e.getMessage());
 			Status=0;
 		}		
 		common_action.updateReport(Status,Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -74,6 +77,7 @@ public class template_testcase extends global_variables{
 			Status=common_action.CloseBrowser();
 		} catch (Exception e) {
 			log_system.error("Execution failed to Close Browser");
+			log_system.error(e.getMessage());
 			Status=0;
 		}
 		
@@ -88,6 +92,7 @@ public class template_testcase extends global_variables{
 			Status=menu_action.VerifyMenu(url);
 		} catch (Exception e) {
 			log_system.error("Execution failed to verify Menu");
+			log_system.error(e.getMessage());
 			Status=0;
 		}
 		getscreenshot.screenshot(path_lib_screenshot+Client+"\\", Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -102,6 +107,7 @@ public class template_testcase extends global_variables{
 			Status=common_action.ConsolError();
 		} catch (Exception e) {
 			log_system.error("Execution failed to verify Consol Error");
+			log_system.error(e.getMessage());
 			Status=0;
 		}
 		getscreenshot.screenshot(path_lib_screenshot+Client+"\\", Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -116,6 +122,7 @@ public class template_testcase extends global_variables{
 			Status=career_action.verifyCareer();
 		} catch (Exception e) {
 			log_system.error("Execution failed to verify Career");
+			log_system.error(e.getMessage());
 			Status=0;
 		}
 		getscreenshot.screenshot(path_lib_screenshot+Client+"\\", Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -130,6 +137,7 @@ public class template_testcase extends global_variables{
 			Status=gallery_action.verifyGallery();
 		} catch (Exception e) {
 			log_system.error("Execution failed to verify Gallery");
+			log_system.error(e.getMessage());
 			Status=0;
 		}
 		getscreenshot.screenshot(path_lib_screenshot+Client+"\\", Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -144,6 +152,7 @@ public class template_testcase extends global_variables{
 			Status=product_action.VerifyMenuItem();
 		} catch (Exception e) {
 			log_system.error("Execution failed to verify Menu Item");
+			log_system.error(e.getMessage());
 			Status=0;
 		}
 		getscreenshot.screenshot(path_lib_screenshot+Client+"\\", Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -158,6 +167,7 @@ public class template_testcase extends global_variables{
 			Status=product_action.AddProduct();
 		} catch (Exception e) {
 			log_system.error("Execution failed to Add Product");
+			log_system.error(e.getMessage());
 			Status=0;
 		}
 		getscreenshot.screenshot(path_lib_screenshot+Client+"\\", Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -172,6 +182,7 @@ public class template_testcase extends global_variables{
 			Status=product_action.AddEditProduct();
 		} catch (Exception e) {
 			log_system.error("Execution failed to Add Edit Product");
+			log_system.error(e.getMessage());
 			Status=0;
 		}
 		getscreenshot.screenshot(path_lib_screenshot+Client+"\\", Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -187,6 +198,7 @@ public class template_testcase extends global_variables{
 			Status=product_action.RemoveEditProduct();
 		} catch (Exception e) {
 			log_system.error("Execution failed to Remove Edit Product");
+			log_system.error(e.getMessage());
 			Status=0;
 		}
 		getscreenshot.screenshot(path_lib_screenshot+Client+"\\", Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -201,6 +213,7 @@ public class template_testcase extends global_variables{
 			Status=product_action.DeleteProduct(Instruction);
 		} catch (Exception e) {
 			log_system.error("Execution failed to Delete Product");
+			log_system.error(e.getMessage());
 			Status=0;
 		}
 		getscreenshot.screenshot(path_lib_screenshot+Client+"\\", Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -215,6 +228,7 @@ public class template_testcase extends global_variables{
 			Status=product_action.VerifySummary(ElementKey,ElementSelector,Tax);
 		} catch (Exception e) {
 			log_system.error("Execution failed to verify Summary");
+			log_system.error(e.getMessage());
 			Status=0;
 		}
 		getscreenshot.screenshot(path_lib_screenshot+Client+"\\", Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -229,6 +243,7 @@ public class template_testcase extends global_variables{
 			Status=product_action.VerifySummaryDelivery(ElementKey,ElementSelector,Tax);
 		} catch (Exception e) {
 			log_system.error("Execution failed to verify Summary");
+			log_system.error(e.getMessage());
 			Status=0;
 		}
 		getscreenshot.screenshot(path_lib_screenshot+Client+"\\", Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -290,6 +305,7 @@ public class template_testcase extends global_variables{
 			Status=ReserveATable_action.ReserveATable();
 		} catch (Exception e) {
 			log_system.error("Execution failed for Reserve A Table");
+			log_system.error(e.getMessage());
 			Status=0;
 		}
 		getscreenshot.screenshot(path_lib_screenshot+Client+"\\", Thread.currentThread().getStackTrace()[1].getMethodName());
@@ -304,7 +320,7 @@ public class template_testcase extends global_variables{
 			Status=ReserveATable_action.verifyTimeforReserveATable(City,TimeSlot);
 		} catch (Exception e) {
 			log_system.error("Verification failed of time and date for reserve a table");
-			log_system.error(e.getStackTrace());
+			log_system.error(e.getMessage());
 			Status=0;
 		}
 		getscreenshot.screenshot(path_lib_screenshot+Client+"\\", Thread.currentThread().getStackTrace()[1].getMethodName());

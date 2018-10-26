@@ -19,12 +19,13 @@ public class action_checkout extends global_variables{
 		ArrayList<String> errorLog=new ArrayList<String>();
 		int Status=0;
 		Actions act =new Actions(Driver);
-		WebElement DeliveryTime=Driver.findElement(By.xpath("//span[normalize-space(@class) = 't-operation-hours']"));
-		String TimeZone=DeliveryTime.getText();
-		ArrayList<String> TimeSlot=getTimeSlot(TimeZone, timeslot, city);
-		Calendar actualtime=timeSelect(city);
+		
 		if(ProductDetails.size()>0)
 		{
+			WebElement DeliveryTime=Driver.findElement(By.xpath("//span[normalize-space(@class) = 't-operation-hours']"));
+			String TimeZone=DeliveryTime.getText();
+			ArrayList<String> TimeSlot=getTimeSlot(TimeZone, timeslot, city);
+			Calendar actualtime=timeSelect(city);
 			WebElement checkoutfortakeout=Driver.findElement(By.xpath("//a[normalize-space(@class) = 'ubtn blackbtn y-checkoutBtn']"));
 			act.moveToElement(checkoutfortakeout);
 			checkoutfortakeout.click();
@@ -180,7 +181,7 @@ public class action_checkout extends global_variables{
 																																	if(common_action.Click(Driver.findElement(By.xpath("//a[normalize-space(@class) = 'ubtn blackbtn placemyorder']")))==1)
 																																	{
 																																		Thread.sleep(4000);
-																																		if(common_action.VerifyElement("ByXPath", "//a[normalize-space(@class) = 'txt_ordersummary']")==1)
+																																		if(common_action.VerifyElement("ByXPath", "//p[normalize-space(@class) = 'txt_ordersummary']")==1)
 																																		{
 																																			Status=1;
 																																			ProductDetails.clear();

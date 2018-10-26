@@ -547,11 +547,12 @@ public class action_product extends global_variables{
 		if(errorlog.size()==0 && Status!=2)
 		{
 			Status=1;
+			Driver.get(Driver.getCurrentUrl());
+			handle_ajax_call.HandleAjaxCall();
+			Thread.sleep(2000);
+			handle_ajax_call.HandleAjaxCall();
 		}
-		Driver.get(Driver.getCurrentUrl());
-		handle_ajax_call.HandleAjaxCall();
-		Thread.sleep(2000);
-		handle_ajax_call.HandleAjaxCall();
+		
 		return Status;
 	}
 
@@ -1028,7 +1029,7 @@ public class action_product extends global_variables{
 	}
 	
 	
-	@SuppressWarnings("unlikely-arg-type")
+
 	public int DeleteProduct(String Instruction)  throws Exception
 	{				
 		String Product_Item="";
@@ -1115,7 +1116,8 @@ public class action_product extends global_variables{
 					handle_ajax_call.HandleAjaxCall();
 					Thread.sleep(1000);
 					handle_ajax_call.HandleAjaxCall();
-					int indexcount1=ProductDetails.size()-1;
+					ProductDetails.remove(Product_Item);
+					/*int indexcount1=ProductDetails.size()-1;
 					if(indexcount1!=indexcount)
 					for(int i=indexcount;i<indexcount1;i++)
 					{
@@ -1129,7 +1131,7 @@ public class action_product extends global_variables{
 					Driver.get(Driver.getCurrentUrl());
 					handle_ajax_call.HandleAjaxCall();
 					Thread.sleep(2000);
-					handle_ajax_call.HandleAjaxCall();
+					handle_ajax_call.HandleAjaxCall();*/
 					Status=1;
 				}			
 			}
