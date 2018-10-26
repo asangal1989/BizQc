@@ -79,6 +79,17 @@ public class action_product extends global_variables{
 			
 			act.moveToElement(ele_menu).build().perform();
 			Status=common_action.Click(ele_menu);
+			Thread.sleep(2000);
+			try 
+			{
+				Driver.findElement(By.xpath("//div[normalize-space(@id) = 'myDropdown']"));
+				WebElement menu_click=Driver.findElement(By.xpath("//div[normalize-space(@id) = 'myDropdown']//a[normalize-space(@data-target) = 'menu'] | //div[normalize-space(@id) = 'myDropdown']//a[normalize-space(@data-gtmd) = 'menu']"));
+				menu_click.click();
+			}
+			catch(Exception e)
+			{
+				
+			}
 			handle_ajax_call.HandleAjaxCall();
 			Thread.sleep(1000);
 			handle_ajax_call.HandleAjaxCall();
@@ -467,7 +478,7 @@ public class action_product extends global_variables{
 										WebElement subcategory_addon_choose_list_ele_select_details=subcategory_addon_choose_list_ele_select.findElement(By.tagName("input"));
 										toppingName=subcategory_addon_choose_list_ele_select_details.getAttribute("data-option-name");
 										toppingPrice=subcategory_addon_choose_list_ele_select_details.getAttribute("data-option-price");
-										toppings.add(toppingName.toLowerCase()+","+"1"+","+toppingPrice);
+										toppings.add(toppingName.toLowerCase().trim()+","+"1"+","+toppingPrice);
 										subcategory_addon_choose_list_ele_select_click.click();					
 										handle_ajax_call.HandleAjaxCall();
 										Thread.sleep(2000);
@@ -485,7 +496,10 @@ public class action_product extends global_variables{
 							{
 								// if product have no toppings
 							}
+							int product_id_tmp=ProductDetails.size();
+							product_id_tmp++;							
 							String Product_Id=product_popup.findElement(By.id("uid")).getAttribute("value");
+							Product_Id=Product_Id.split("_")[0]+"_"+String.valueOf(product_id_tmp);
 							product_popup.findElement(By.xpath(".//textarea[normalize-space(@class) = 'menu_special_instruction_item special_instruction']")).sendKeys("hello add instructions here");
 							gs_productdetails.setInstructions(("hello add instructions here").toLowerCase());
 							product_popup.findElement(By.xpath(".//a[normalize-space(@class) = 'ubtn blackbtn btn_popupaddtoorder add-to-order']")).click();
@@ -534,7 +548,10 @@ public class action_product extends global_variables{
 		{
 			Status=1;
 		}
-		
+		Driver.get(Driver.getCurrentUrl());
+		handle_ajax_call.HandleAjaxCall();
+		Thread.sleep(2000);
+		handle_ajax_call.HandleAjaxCall();
 		return Status;
 	}
 
@@ -600,6 +617,7 @@ public class action_product extends global_variables{
 						String toppingPrice=null;
 						List<WebElement> subcategory_addon_choose_list=subcategory_addon_choose.findElements(By.tagName("li"));
 						ArrayList<WebElement> subcategory_addon_choose_list_ele_list=new ArrayList<WebElement>();
+						int checkbox=0;
 						if(addon_topping_type.contains("Choose any one"))
 						{												
 							for(WebElement subcategory_addon_choose_list_ele:subcategory_addon_choose_list)
@@ -609,25 +627,63 @@ public class action_product extends global_variables{
 								WebElement subcategory_addon_choose_list_ele_select_details=subcategory_addon_choose_list_ele.findElement(By.tagName("input"));
 								toppingName=subcategory_addon_choose_list_ele_select_details.getAttribute("data-option-name").toLowerCase();
 								toppingPrice=subcategory_addon_choose_list_ele_select_details.getAttribute("data-option-price");
-								if(!toppingName.contains(topping_selected))
+								if(subcategory_addon_choose_list_ele_select_details.getAttribute("type").contains("radio"))
+								{									
+									if(!toppingName.contains(topping_selected))
+									{
+										
+										subcategory_addon_choose_list_ele_select_click.click();
+										handle_ajax_call.HandleAjaxCall();
+										Thread.sleep(1000);
+										handle_ajax_call.HandleAjaxCall();
+										String toppingcount=ProductDetails.get(Product_Item).getTopping_details().get(count).split(",")[1];
+										toppingPrice=String.valueOf(Float.parseFloat(toppingPrice)*Integer.valueOf(toppingcount));						
+										String updated_Topping=toppingName.toLowerCase()+","+toppingcount+","+toppingPrice;
+										ProductDetails.get(Product_Item).getTopping_details().set(count, updated_Topping);									
+										handle_ajax_call.HandleAjaxCall();
+										Thread.sleep(2000);
+										handle_ajax_call.HandleAjaxCall();
+										break;
+									}	
+								}
+								else
 								{
-									
-									subcategory_addon_choose_list_ele_select_click.click();
-									handle_ajax_call.HandleAjaxCall();
-									Thread.sleep(1000);
-									handle_ajax_call.HandleAjaxCall();
-									break;
-								}														
+									if(toppingName.equals(topping_selected.trim()))
+									{
+										handle_ajax_call.HandleAjaxCall();
+										Thread.sleep(1000);
+										handle_ajax_call.HandleAjaxCall();
+										subcategory_addon_choose_list_ele_select_click.click();
+										
+									}
+									else
+									{
+										subcategory_addon_choose_list_ele_list.add(subcategory_addon_choose_list_ele);
+									}
+									checkbox++;
+								}
+							}
+							
+							if(checkbox>0)
+							{
+								int index1=rdm.nextInt(subcategory_addon_choose_list_ele_list.size());
+								WebElement 	subcategory_addon_choose_list_ele_select=subcategory_addon_choose_list_ele_list.get(index1);
+								WebElement subcategory_addon_choose_list_ele_select_click=subcategory_addon_choose_list_ele_select.findElement(By.tagName("span"));
+								WebElement subcategory_addon_choose_list_ele_select_details=subcategory_addon_choose_list_ele_select.findElement(By.tagName("input"));
+								subcategory_addon_choose_list_ele_select_click.click();
+								toppingName=subcategory_addon_choose_list_ele_select_details.getAttribute("data-option-name");
+								toppingPrice=subcategory_addon_choose_list_ele_select_details.getAttribute("data-option-price");
+								String toppingcount=ProductDetails.get(Product_Item).getTopping_details().get(count).split(",")[1];
+								toppingPrice=String.valueOf(Float.parseFloat(toppingPrice)*Integer.valueOf(toppingcount));
+								String updated_Topping=toppingName.toLowerCase().trim()+","+toppingcount+","+toppingPrice;
+								ProductDetails.get(Product_Item).getTopping_details().set(count, updated_Topping);
+														
+								handle_ajax_call.HandleAjaxCall();
+								Thread.sleep(2000);
+								handle_ajax_call.HandleAjaxCall();
 							}
 							
 							
-							String toppingcount=ProductDetails.get(Product_Item).getTopping_details().get(count).split(",")[1];
-							toppingPrice=String.valueOf(Float.parseFloat(toppingPrice)*Integer.valueOf(toppingcount));						
-							String updated_Topping=toppingName.toLowerCase()+","+toppingcount+","+toppingPrice;
-							ProductDetails.get(Product_Item).getTopping_details().set(count, updated_Topping);									
-							handle_ajax_call.HandleAjaxCall();
-							Thread.sleep(2000);
-							handle_ajax_call.HandleAjaxCall();
 						}					
 						else
 						{
@@ -665,7 +721,7 @@ public class action_product extends global_variables{
 								toppingPrice=subcategory_addon_choose_list_ele_select_details.getAttribute("data-option-price");
 								String toppingcount=ProductDetails.get(Product_Item).getTopping_details().get(count).split(",")[1];
 								toppingPrice=String.valueOf(Float.parseFloat(toppingPrice)*Integer.valueOf(toppingcount));
-								String updated_Topping=toppingName.toLowerCase()+","+toppingcount+","+toppingPrice;
+								String updated_Topping=toppingName.toLowerCase().trim()+","+toppingcount+","+toppingPrice;
 								ProductDetails.get(Product_Item).getTopping_details().set(count, updated_Topping);
 														
 								handle_ajax_call.HandleAjaxCall();
@@ -791,6 +847,7 @@ public class action_product extends global_variables{
 						String toppingPrice=null;
 						List<WebElement> subcategory_addon_choose_list=subcategory_addon_choose.findElements(By.tagName("li"));
 						ArrayList<WebElement> subcategory_addon_choose_list_ele_list=new ArrayList<WebElement>();
+						int checkbox=0;
 						if(addon_topping_type.contains("Choose any one"))
 						{												
 							for(WebElement subcategory_addon_choose_list_ele:subcategory_addon_choose_list)
@@ -800,24 +857,63 @@ public class action_product extends global_variables{
 								WebElement subcategory_addon_choose_list_ele_select_details=subcategory_addon_choose_list_ele.findElement(By.tagName("input"));
 								toppingName=subcategory_addon_choose_list_ele_select_details.getAttribute("data-option-name").toLowerCase();
 								toppingPrice=subcategory_addon_choose_list_ele_select_details.getAttribute("data-option-price");
-								if(!toppingName.contains(topping_selected))
+								if(subcategory_addon_choose_list_ele_select_details.getAttribute("type").contains("radio"))
+								{									
+									if(!toppingName.contains(topping_selected))
+									{
+										
+										subcategory_addon_choose_list_ele_select_click.click();
+										handle_ajax_call.HandleAjaxCall();
+										Thread.sleep(1000);
+										handle_ajax_call.HandleAjaxCall();
+										String toppingcount=ProductDetails.get(Product_Item).getTopping_details().get(count).split(",")[1];
+										toppingPrice=String.valueOf(Float.parseFloat(toppingPrice)*Integer.valueOf(toppingcount));						
+										String updated_Topping=toppingName.toLowerCase()+","+toppingcount+","+toppingPrice;
+										ProductDetails.get(Product_Item).getTopping_details().set(count, updated_Topping);									
+										handle_ajax_call.HandleAjaxCall();
+										Thread.sleep(2000);
+										handle_ajax_call.HandleAjaxCall();
+										break;
+									}	
+								}
+								else
 								{
-									subcategory_addon_choose_list_ele_select_click.click();
-									handle_ajax_call.HandleAjaxCall();
-									Thread.sleep(1000);
-									handle_ajax_call.HandleAjaxCall();
-									break;
-								}														
+									if(toppingName.equals(topping_selected.trim()))
+									{
+										handle_ajax_call.HandleAjaxCall();
+										Thread.sleep(1000);
+										handle_ajax_call.HandleAjaxCall();
+										subcategory_addon_choose_list_ele_select_click.click();
+										
+									}
+									else
+									{
+										subcategory_addon_choose_list_ele_list.add(subcategory_addon_choose_list_ele);
+									}
+									checkbox++;
+								}
+							}
+							
+							if(checkbox>0)
+							{
+								int index1=rdm.nextInt(subcategory_addon_choose_list_ele_list.size());
+								WebElement 	subcategory_addon_choose_list_ele_select=subcategory_addon_choose_list_ele_list.get(index1);
+								WebElement subcategory_addon_choose_list_ele_select_click=subcategory_addon_choose_list_ele_select.findElement(By.tagName("span"));
+								WebElement subcategory_addon_choose_list_ele_select_details=subcategory_addon_choose_list_ele_select.findElement(By.tagName("input"));
+								subcategory_addon_choose_list_ele_select_click.click();
+								toppingName=subcategory_addon_choose_list_ele_select_details.getAttribute("data-option-name");
+								toppingPrice=subcategory_addon_choose_list_ele_select_details.getAttribute("data-option-price");
+								String toppingcount=ProductDetails.get(Product_Item).getTopping_details().get(count).split(",")[1];
+								toppingPrice=String.valueOf(Float.parseFloat(toppingPrice)*Integer.valueOf(toppingcount));
+								String updated_Topping=toppingName.toLowerCase().trim()+","+toppingcount+","+toppingPrice;
+								ProductDetails.get(Product_Item).getTopping_details().set(count, updated_Topping);
+														
+								handle_ajax_call.HandleAjaxCall();
+								Thread.sleep(2000);
+								handle_ajax_call.HandleAjaxCall();
 							}
 							
 							
-							String toppingcount=ProductDetails.get(Product_Item).getTopping_details().get(count).split(",")[1];
-							toppingPrice=String.valueOf(Float.parseFloat(toppingPrice)*Integer.valueOf(toppingcount));						
-							String updated_Topping=toppingName.toLowerCase()+","+toppingcount+","+toppingPrice;
-							ProductDetails.get(Product_Item).getTopping_details().set(count, updated_Topping);									
-							handle_ajax_call.HandleAjaxCall();
-							Thread.sleep(2000);
-							handle_ajax_call.HandleAjaxCall();
 						}					
 						else
 						{
@@ -932,6 +1028,7 @@ public class action_product extends global_variables{
 	}
 	
 	
+	@SuppressWarnings("unlikely-arg-type")
 	public int DeleteProduct(String Instruction)  throws Exception
 	{				
 		String Product_Item="";
@@ -999,6 +1096,15 @@ public class action_product extends global_variables{
 					Product_Item=Product_item_list.get(index);
 					WebElement delete_Product=Driver.findElement(By.xpath(".//a[normalize-space(@class) = 't-delete-order ubtn'][normalize-space(@data-id) = '"+Product_Item+"']"));
 					act.moveToElement(delete_Product).build().perform();
+					int indexcount=0;
+					for(int i=0;i<ProductDetails.size();i++)
+					{
+						if(Product_item_list.get(i).contains(Product_Item))
+						{
+							indexcount=i;
+							break;
+						}
+					}				
 					delete_Product.click();
 					handle_ajax_call.HandleAjaxCall();
 					Thread.sleep(1000);
@@ -1009,7 +1115,21 @@ public class action_product extends global_variables{
 					handle_ajax_call.HandleAjaxCall();
 					Thread.sleep(1000);
 					handle_ajax_call.HandleAjaxCall();
-					ProductDetails.remove(Product_Item);
+					int indexcount1=ProductDetails.size()-1;
+					if(indexcount1!=indexcount)
+					for(int i=indexcount;i<indexcount1;i++)
+					{
+						int j=i+1;
+						System.out.println(Product_item_list.get(i));
+						System.out.println(Product_item_list.get(j));
+						ProductDetails.put(Product_item_list.get(i), ProductDetails.get(Product_item_list.get(j)));
+					}
+					indexcount1=ProductDetails.size()-1;
+					ProductDetails.remove(Product_item_list.get(indexcount1));
+					Driver.get(Driver.getCurrentUrl());
+					handle_ajax_call.HandleAjaxCall();
+					Thread.sleep(2000);
+					handle_ajax_call.HandleAjaxCall();
 					Status=1;
 				}			
 			}
@@ -1027,6 +1147,7 @@ public class action_product extends global_variables{
 	
 	public int VerifySummary(String ElementKey, String ElementSelector,String Tax)  throws Exception
 	{
+		Status=0;
 		Thread.sleep(3000);
 		LinkedHashMap<String, gs_utilities.productdetails> ProductDetails_current=new LinkedHashMap<String, gs_utilities.productdetails>();
 		element_locator element_loc=new element_locator();
@@ -1073,7 +1194,224 @@ public class action_product extends global_variables{
 					
 					if(!SummaryContainer_ProductContainer_info_details.getText().contains("+"))
 					{	
-						gs_utilities.productdetails gs_ProductDetails=new gs_utilities.productdetails();										
+						gs_utilities.productdetails gs_ProductDetails=new gs_utilities.productdetails();
+						String ProductPrice_current=SummaryContainer_ProductContainer_info_details.getText().split("\\$")[1];
+						String ProductCount_current=SummaryContainer_ProductContainer_info_details.getText().split("\\$")[0].trim();
+						ProductCount_current=ProductCount_current.substring(ProductCount_current.length()-1, ProductCount_current.length());
+						String ProductName_current=SummaryContainer_ProductContainer_info_details.getText().split("\\$")[0];
+						ProductName_current=ProductName_current.substring(0, ProductName_current.length()-2).replace("( ", "(").replace(" )", ")");									
+						gs_ProductDetails.setProductName(ProductName_current.replace("\n", "").trim().toLowerCase());
+						gs_ProductDetails.setProduct_actual_price(Float.parseFloat(ProductPrice_current));
+						gs_ProductDetails.setProduct_count(Integer.parseInt(ProductCount_current));
+						ArrayList<String> toppings=new ArrayList<String>();
+						Product_item=Product_item_attribute.replace(" ", ",");
+						Product_item=Product_item.split(",")[2];
+						Product_item=Product_item.replace("item_", "");
+						gs_ProductDetails.setTopping_details(toppings);
+						try {
+							gs_ProductDetails.setInstructions(Instruction_current.get(productcount).trim().toLowerCase());
+						}
+						catch(Exception e)
+						{
+							log_system.error("instruction is missing for product item");
+						}
+						ProductDetails_current.put(Product_item, gs_ProductDetails);
+						productcount++;
+					}
+					else if (SummaryContainer_ProductContainer_info_details.getText().contains("+"))
+					{					
+						
+						String[] s=SummaryContainer_ProductContainer_info_details.getText().split("\n");
+						String topping_data=s[0].replace("+", "").trim().toLowerCase()+","+s[1].trim()+","+s[2].replace("$", "").trim();
+						ProductDetails_current.get(Product_item).getTopping_details().add(topping_data);
+									
+					}
+				}
+				
+				int errorcount=0;
+				for(String Compair:ProductDetails.keySet())
+				{
+					if(!ProductDetails.get(Compair).equals(ProductDetails_current.get(Compair)))					
+					{
+						if(!ProductDetails.get(Compair).getProductName().equals(ProductDetails_current.get(Compair).getProductName()))
+						{
+							
+							log_system.error(ProductDetails.get(Compair).getProductName());
+							log_system.error(ProductDetails_current.get(Compair).getProductName());
+							log_system.error("Product name not mapped "+ ProductDetails.get(Compair).getProductName());
+							errorcount++;
+						}
+						else
+						{
+							if(!ProductDetails.get(Compair).getInstructions().equals(ProductDetails_current.get(Compair).getInstructions()))
+							{
+								log_system.error("Instruction not mapped "+ ProductDetails.get(Compair).getProductName());
+								errorcount++;
+							}
+							else
+							{
+								if(ProductDetails.get(Compair).getProduct_actual_price()!=(ProductDetails_current.get(Compair).getProduct_actual_price()))
+								{
+									log_system.error("Price not mapped "+ ProductDetails.get(Compair).getProductName());
+									errorcount++;
+								}
+								else
+								{
+									if(ProductDetails.get(Compair).getProduct_count()!=(ProductDetails_current.get(Compair).getProduct_count()))
+									{
+										log_system.error("Count not mapped "+ ProductDetails.get(Compair).getProductName());
+										errorcount++;
+									}
+									else
+									{
+										if(!ProductDetails.get(Compair).getTopping_details().equals(ProductDetails_current.get(Compair).getTopping_details()))
+										{
+											log_system.error("Toppings not mapped "+ ProductDetails_current.get(Compair).getTopping_details());
+											log_system.error("Toppings not mapped "+ ProductDetails.get(Compair).getTopping_details());
+											errorcount++;
+										}																
+									}
+								}
+							}
+						}
+						
+					}
+				}
+				
+				float Product_price_calculate=0;
+				float order_subtotal=0;
+				float order_tax=0;
+				if(errorcount==0)
+				{
+					order_subtotal=Float.parseFloat(SummaryContainer.findElement(By.xpath(".//span[normalize-space(@class) = 'order_subtotal']")).getText());
+					order_tax=Float.parseFloat(SummaryContainer.findElement(By.xpath(".//span[normalize-space(@class) = 'order_tax']")).getText());			
+					for(String Product_item1:ProductDetails_current.keySet())
+					{
+						
+						Product_price_calculate=Product_price_calculate+ProductDetails_current.get(Product_item1).getProduct_actual_price();				
+						ArrayList<String> Topping_cal=ProductDetails_current.get(Product_item1).getTopping_details();
+						for(String toppingDetails:Topping_cal)
+						{
+							float toppingprice=Float.parseFloat(toppingDetails.split(",")[2]);
+							Product_price_calculate=Product_price_calculate+toppingprice;					
+						}				
+					}
+					
+					Product_price_calculate=Float.parseFloat(new BigDecimal(Product_price_calculate).setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+					float order_total=Float.parseFloat(SummaryContainer.findElement(By.xpath(".//span[normalize-space(@class) = 'order_total']")).getText());
+					if(order_subtotal==Product_price_calculate)
+					{
+						
+						
+						float tax_calculation=(Product_price_calculate*Float.parseFloat(Tax))/100;
+						BigDecimal bg=new BigDecimal(tax_calculation).setScale(3, BigDecimal.ROUND_HALF_UP);
+						bg=bg.setScale(2, BigDecimal.ROUND_HALF_UP);
+						tax_calculation=Float.parseFloat(bg.toString());
+						if(order_tax==tax_calculation)
+						{
+							
+							float total_calculate=Product_price_calculate+order_tax;
+							BigDecimal bg1=new BigDecimal(total_calculate).setScale(3, BigDecimal.ROUND_HALF_UP);
+							bg1=bg1.setScale(2, BigDecimal.ROUND_HALF_UP);
+							total_calculate=Float.parseFloat(bg1.toString());
+							
+							try
+							{
+								float discount=Float.parseFloat(SummaryContainer.findElement(By.xpath(".//span[normalize-space(@class) = 'discount_amount']")).getText());
+								total_calculate=total_calculate-discount;
+								BigDecimal bg2=new BigDecimal(total_calculate).setScale(3, BigDecimal.ROUND_HALF_UP);
+								bg2=bg2.setScale(2, BigDecimal.ROUND_HALF_UP);
+								total_calculate=Float.parseFloat(bg2.toString());
+							}
+							catch(Exception e)
+							{
+								
+							}
+							if(order_total==total_calculate)
+							{
+								Status=1;
+							}
+							else
+							{								
+								log_system.error("incorrect order total");
+								Status=0;
+							}
+						}
+						
+					}
+					else
+					{
+						log_system.error("Incorrect product sub total");
+						Status=0;
+					}				
+				}
+				else
+				{
+					Status=0;
+				}
+				
+			}
+		}
+		else
+		{
+			Status=2;
+		}
+		
+		
+		return Status;
+	}
+	
+	
+	public int VerifySummaryDelivery(String ElementKey, String ElementSelector,String Tax)  throws Exception
+	{
+		Status=0;
+		Thread.sleep(3000);
+		LinkedHashMap<String, gs_utilities.productdetails> ProductDetails_current=new LinkedHashMap<String, gs_utilities.productdetails>();
+		element_locator element_loc=new element_locator();
+		By element_locator=null;
+		WebElement menu_thirdParty=null;
+		try
+		{
+			menu_thirdParty=Driver.findElement(By.xpath("//a[normalize-space(@class) = 'menu-link']"));
+		}
+		catch(Exception e)
+		{
+			
+		}
+		
+		if(menu_thirdParty==null)
+		{
+			element_locator=element_loc.getElement(ElementKey, ElementSelector);
+			Actions act=new Actions(Driver);
+			act.moveToElement(Driver.findElement(element_locator)).build().perform();
+			WebDriverWait wait = new WebDriverWait(Driver, 40);
+			wait.until(ExpectedConditions.presenceOfElementLocated(element_locator));
+			WebElement SummaryContainer=Driver.findElement(element_locator);						
+			WebElement SummaryContainer_ProductContainer=SummaryContainer.findElement(By.xpath(".//div[normalize-space(@class) = 'container']"));
+			WebElement SummaryContainer_ProductContainer_info=SummaryContainer_ProductContainer.findElement(By.xpath(".//div[starts-with(@class,'yourorder_box')]"));
+			List<WebElement> SummaryContainer_ProductContainer_Instruction=SummaryContainer_ProductContainer.findElements(By.xpath(".//p[starts-with(@class,'t-item-instructions')]"));
+			ArrayList<String> Instruction_current=new ArrayList<String>();
+			for(WebElement instruction_ele:SummaryContainer_ProductContainer_Instruction)
+			{
+				Instruction_current.add(instruction_ele.getText());
+			}
+			if(ProductDetails.isEmpty())
+			{
+				System.out.println("not product added");
+				Status=1;
+			}
+			else
+			{			
+				List<WebElement> SummaryContainer_ProductContainer_info_details_list=SummaryContainer_ProductContainer_info.findElements(By.xpath(".//div[starts-with(@class,'row')]"));
+				int productcount=0;
+				String Product_item=null;
+				for(WebElement SummaryContainer_ProductContainer_info_details:SummaryContainer_ProductContainer_info_details_list)
+				{				
+					String Product_item_attribute=SummaryContainer_ProductContainer_info_details.getAttribute("class");
+					
+					if(!SummaryContainer_ProductContainer_info_details.getText().contains("+"))
+					{	
+						gs_utilities.productdetails gs_ProductDetails=new gs_utilities.productdetails();
 						String ProductPrice_current=SummaryContainer_ProductContainer_info_details.getText().split("\\$")[1];
 						String ProductCount_current=SummaryContainer_ProductContainer_info_details.getText().split("\\$")[0].trim();
 						ProductCount_current=ProductCount_current.substring(ProductCount_current.length()-1, ProductCount_current.length());
@@ -1114,37 +1452,39 @@ public class action_product extends global_variables{
 					{
 						if(!ProductDetails.get(Compair).getProductName().equals(ProductDetails_current.get(Compair).getProductName()))
 						{
-							System.out.println(ProductDetails.get(Compair).getProductName());
-							System.out.println(ProductDetails_current.get(Compair).getProductName());
-							System.out.println("Product name not mapped "+ ProductDetails.get(Compair).getProductName());
+							
+							log_system.error(ProductDetails.get(Compair).getProductName());
+							log_system.error(ProductDetails_current.get(Compair).getProductName());
+							log_system.error("Product name not mapped "+ ProductDetails.get(Compair).getProductName());
 							errorcount++;
 						}
 						else
 						{
 							if(!ProductDetails.get(Compair).getInstructions().equals(ProductDetails_current.get(Compair).getInstructions()))
 							{
-								System.out.println("Instruction not mapped "+ ProductDetails.get(Compair).getProductName());
+								log_system.error("Instruction not mapped "+ ProductDetails.get(Compair).getProductName());
 								errorcount++;
 							}
 							else
 							{
 								if(ProductDetails.get(Compair).getProduct_actual_price()!=(ProductDetails_current.get(Compair).getProduct_actual_price()))
 								{
-									System.out.println("Price not mapped "+ ProductDetails.get(Compair).getProductName());
+									log_system.error("Price not mapped "+ ProductDetails.get(Compair).getProductName());
 									errorcount++;
 								}
 								else
 								{
 									if(ProductDetails.get(Compair).getProduct_count()!=(ProductDetails_current.get(Compair).getProduct_count()))
 									{
-										System.out.println("Count not mapped "+ ProductDetails.get(Compair).getProductName());
+										log_system.error("Count not mapped "+ ProductDetails.get(Compair).getProductName());
 										errorcount++;
 									}
 									else
 									{
 										if(!ProductDetails.get(Compair).getTopping_details().equals(ProductDetails_current.get(Compair).getTopping_details()))
 										{
-											System.out.println("Toppings not mapped "+ ProductDetails.get(Compair).getProductName());
+											System.out.println("Toppings not mapped "+ ProductDetails_current.get(Compair).getTopping_details());
+											System.out.println("Toppings not mapped "+ ProductDetails.get(Compair).getTopping_details());
 											errorcount++;
 										}																
 									}
@@ -1160,8 +1500,8 @@ public class action_product extends global_variables{
 				float order_tax=0;
 				if(errorcount==0)
 				{
-					order_subtotal=Float.parseFloat(Driver.findElement(By.xpath("//span[normalize-space(@class) = 'order_subtotal']")).getText());
-					order_tax=Float.parseFloat(Driver.findElement(By.xpath("//span[normalize-space(@class) = 'order_tax']")).getText());			
+					order_subtotal=Float.parseFloat(SummaryContainer.findElement(By.xpath(".//span[normalize-space(@class) = 'order_subtotal']")).getText());
+					order_tax=Float.parseFloat(SummaryContainer.findElement(By.xpath(".//span[normalize-space(@class) = 'order_tax']")).getText());			
 					for(String Product_item1:ProductDetails_current.keySet())
 					{
 						
@@ -1174,8 +1514,7 @@ public class action_product extends global_variables{
 						}				
 					}
 					
-					Product_price_calculate=Float.parseFloat(new BigDecimal(Product_price_calculate).setScale(2, BigDecimal.ROUND_HALF_UP).toString());
-					float order_total=Float.parseFloat(Driver.findElement(By.xpath("//span[normalize-space(@class) = 'order_total']")).getText());
+					Product_price_calculate=Float.parseFloat(new BigDecimal(Product_price_calculate).setScale(2, BigDecimal.ROUND_HALF_UP).toString());					
 					if(order_subtotal==Product_price_calculate)
 					{
 						
@@ -1194,7 +1533,7 @@ public class action_product extends global_variables{
 							
 							try
 							{
-								float discount=Float.parseFloat(Driver.findElement(By.xpath("//span[normalize-space(@class) = 'discount_amount']")).getText());
+								float discount=Float.parseFloat(SummaryContainer.findElement(By.xpath(".//span[normalize-space(@class) = 'discount_amount']")).getText());
 								total_calculate=total_calculate-discount;
 								BigDecimal bg2=new BigDecimal(total_calculate).setScale(3, BigDecimal.ROUND_HALF_UP);
 								bg2=bg2.setScale(2, BigDecimal.ROUND_HALF_UP);
@@ -1204,6 +1543,47 @@ public class action_product extends global_variables{
 							{
 								
 							}
+							
+							
+							try
+							{
+								WebElement deliveryCharge=SummaryContainer.findElement(By.xpath(".//span[normalize-space(@class) = 'deliverycharge_amount']"));								
+								float deliveryChargeamount=Float.parseFloat(deliveryCharge.getText().trim());								
+								total_calculate=total_calculate+deliveryChargeamount;
+								BigDecimal bg2=new BigDecimal(total_calculate).setScale(3, BigDecimal.ROUND_HALF_UP);
+								bg2=bg2.setScale(2, BigDecimal.ROUND_HALF_UP);
+								total_calculate=Float.parseFloat(bg2.toString());
+								
+							}
+							catch(Exception e1)
+							{
+								
+							}
+							
+							try
+							{
+								WebElement TipAmount=SummaryContainer.findElement(By.xpath(".//select[normalize-space(@class) = 't-tip-percent']"));
+								Select TipAmountOption=new Select(TipAmount);
+								Random rdm=new Random();
+								int index=rdm.nextInt(TipAmountOption.getOptions().size());
+								TipAmountOption.selectByIndex(index);
+								String TipSelected=TipAmountOption.getOptions().get(index).getText();
+								float Tip=0;
+								if(!TipSelected.contains("No Tip"))
+								{
+									Tip=Float.parseFloat(TipSelected.split("%")[1].trim().replace("(", "").replace(")", "").replace("$", "").trim());
+								}
+								total_calculate=total_calculate+Tip;
+								BigDecimal bg2=new BigDecimal(total_calculate).setScale(3, BigDecimal.ROUND_HALF_UP);
+								bg2=bg2.setScale(2, BigDecimal.ROUND_HALF_UP);
+								total_calculate=Float.parseFloat(bg2.toString());
+								
+							}
+							catch(Exception e1)
+							{
+								
+							}
+							float order_total=Float.parseFloat(SummaryContainer.findElement(By.xpath(".//span[normalize-space(@class) = 'order_total']")).getText());
 							if(order_total==total_calculate)
 							{
 								Status=1;
@@ -1238,7 +1618,6 @@ public class action_product extends global_variables{
 		return Status;
 	}
 	
-	
 	public int VerifyDelivery(String Address) throws InterruptedException
 	{
 		JavascriptExecutor js = (JavascriptExecutor)Driver;
@@ -1248,7 +1627,7 @@ public class action_product extends global_variables{
 		Actions act=new Actions(Driver);
 		WebElement delivery=null;
 		try {
-			delivery = Driver.findElement(By.xpath("//label[normalize-space(@class) = 'ubtn btn_service'][normalize-space(@for) = 't_delivery'] | //label[normalize-space(@class) = 'ubtn btn_service hide'][normalize-space(@for) = 't_delivery']"));
+			delivery = Driver.findElement(By.xpath("//label[normalize-space(@class) = 'ubtn btn_service'][normalize-space(@for) = 't_delivery'] | //label[normalize-space(@class) = 'ubtn btn_service hide'][normalize-space(@for) = 't_delivery'] | //label[normalize-space(@class) = 'ubtn blackbtn btn_service'][normalize-space(@for) = 't_delivery'] | //label[normalize-space(@class) = 'ubtn blackbtn btn_service hide'][normalize-space(@for) = 't_delivery']"));
 		} catch (Exception e) {
 			Status=2;		
 			}
@@ -1307,15 +1686,7 @@ public class action_product extends global_variables{
 	
 	public int VerifyDeliveryTime(String City,String timeslot) throws ParseException
 	{
-		Status=0;
-		
-		WebElement delivery=null;
-		try {
-			delivery = Driver.findElement(By.xpath("//label[normalize-space(@class) = 'ubtn btn_service'][normalize-space(@for) = 't_delivery'] | //label[normalize-space(@class) = 'ubtn btn_service hide'][normalize-space(@for) = 't_delivery']"));
-		} catch (Exception e) {
-			Status=2;		
-			}
-		
+		Status=0;								
 		try {
 			WebElement DeliveryTime=Driver.findElement(By.xpath("//span[normalize-space(@class) = 't-operation-hours']"));
 			String TimeZone=DeliveryTime.getText();
@@ -1323,12 +1694,12 @@ public class action_product extends global_variables{
 			Calendar actualtime=timeSelect(City);
 			String OrderType=null;
 			try {
-				OrderType=Driver.findElement(By.xpath("//p[normalize-space(@class) = 'but_order_type txt_order_onlytakeout']")).getText().toLowerCase().trim();
+				OrderType=Driver.findElement(By.xpath("//span[normalize-space(@class) = 'text-capitalize']")).getText().toLowerCase().trim();
 			} catch (Exception e) {
 				
 			}
 			
-			if(!delivery.getAttribute("class").contains("hide") ||  !OrderType.contains("takeout"))
+			if(OrderType.contains("delivery"))
 			{						
 				String ActiveTimeSlot=ActiveTimeSlot(TimeSlot,actualtime,City);
 				String DisplayedTime=Driver.findElement(By.xpath("//p[normalize-space(@class) = 'txt_upper']")).getText().split(",")[1].trim();				
@@ -1337,7 +1708,7 @@ public class action_product extends global_variables{
 					Status=1;
 				}
 			}
-			else if(delivery.getAttribute("class").contains("hide") && OrderType.contains("takeout"))
+			else if(OrderType.contains("takeout"))
 			{
 				TimeSlot.remove(0);
 				String ActiveTimeSlot=ActiveTimeSlot(TimeSlot,actualtime,City);
@@ -1347,10 +1718,10 @@ public class action_product extends global_variables{
 					Status=1;
 				}
 			}
-			
 		} catch (Exception e) {
-			Status=2;
-		}
+			Status=2;		
+			}
+		
 		
 		return Status;
 	}
@@ -1410,7 +1781,14 @@ public class action_product extends global_variables{
 			calendar.add(Calendar.MINUTE,-30);
 			break;
 		}
+		case "li":
+		{
+			calendar.add(Calendar.HOUR,-10);
+			calendar.add(Calendar.MINUTE,-30);
+			break;
 		}
+		}
+		System.out.println(calendar.getTime());
 		return calendar;
 	}
 	

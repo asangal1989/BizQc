@@ -444,9 +444,12 @@ public class action_reserveTable extends global_variables{
 		}
 		else
 		{
-			if(ele_reserveATable.isDisplayed())
-			{
-				Driver.findElement(By.xpath("//a[normalize-space(@class) = 'i_close close']")).click();
+			try {
+				if(ele_reserveATable.isDisplayed())
+				{
+					Driver.findElement(By.xpath("//a[normalize-space(@class) = 'i_close close']")).click();
+				}
+			} catch (Exception e) {
 			}
 		}
 		return Status;		
@@ -746,6 +749,12 @@ public class action_reserveTable extends global_variables{
 			break;
 		}
 		case "Chicago":
+		{
+			calendar.add(Calendar.HOUR,-10);
+			calendar.add(Calendar.MINUTE,-30);
+			break;
+		}
+		case "li":
 		{
 			calendar.add(Calendar.HOUR,-10);
 			calendar.add(Calendar.MINUTE,-30);

@@ -3,6 +3,7 @@ package templates;
 import java.io.IOException;
 
 import action.action_career;
+import action.action_checkout;
 import action.action_common;
 import action.action_gallery;
 import action.action_menu;
@@ -21,6 +22,7 @@ public class template_testcase extends global_variables{
 	action_gallery gallery_action=new action_gallery();
 	action_product product_action=new action_product();
 	action_reserveTable ReserveATable_action=new action_reserveTable();
+	action_checkout checkout_action=new action_checkout();
 	takescreenshot getscreenshot=new takescreenshot();
 	int Status=0;
 	public int OpenBrowser(String Environment,String Browser,String Client)
@@ -220,6 +222,20 @@ public class template_testcase extends global_variables{
 		return Status;
 	}
 	
+	public int VerifySummaryDelivery(String Client,String ElementKey, String ElementSelector,String Tax)
+	{
+		try {
+			
+			Status=product_action.VerifySummaryDelivery(ElementKey,ElementSelector,Tax);
+		} catch (Exception e) {
+			log_system.error("Execution failed to verify Summary");
+			Status=0;
+		}
+		getscreenshot.screenshot(path_lib_screenshot+Client+"\\", Thread.currentThread().getStackTrace()[1].getMethodName());
+		common_action.updateReport(Status,Thread.currentThread().getStackTrace()[1].getMethodName());
+		return Status;
+	}
+	
 	public int VerifyDelivery(String Client,String Address)
 	{
 		try {
@@ -242,6 +258,22 @@ public class template_testcase extends global_variables{
 			Status=product_action.VerifyDeliveryTime(City,timeslot);
 		} catch (Exception e) {
 			log_system.error("Execution failed for verify delivery");
+			log_system.error(e.getMessage());
+			Status=0;
+		}
+		getscreenshot.screenshot(path_lib_screenshot+Client+"\\", Thread.currentThread().getStackTrace()[1].getMethodName());
+		common_action.updateReport(Status,Thread.currentThread().getStackTrace()[1].getMethodName());
+		return Status;
+	}
+	
+	
+	public int CheckoutForTakeout(String Client,String City,String timeslot,String Address,String Tax)
+	{
+		try {
+			
+			Status=checkout_action.CheckoutforTakeout(City,timeslot,Address,Tax);
+		} catch (Exception e) {
+			log_system.error("Execution failed for checkout of takeout");
 			log_system.error(e.getMessage());
 			Status=0;
 		}

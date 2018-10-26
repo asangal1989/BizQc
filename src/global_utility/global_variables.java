@@ -1,9 +1,8 @@
 package global_utility;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
+
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
@@ -43,27 +42,19 @@ public class global_variables extends ReportsManager{
 		
 	}
 	
-	// Global variables
 	
 	
 	// system framework path object
 	public File SourcePath=new File(System.getProperty("user.dir"));
-	public static Logger log_system;
-	
+	public static Logger log_system;	
 	public static LinkedHashMap<String, gs_utilities.productdetails> ProductDetails=new LinkedHashMap<String, gs_utilities.productdetails>();
-	
-	
 	
 	
 	// declaring static variables
 	public static WebDriver Driver;
 	public static String path_lib_screenshotfull=null;
 	public static String mainwindow = null;
-	public static String Randamemailuser=null;
-	@SuppressWarnings("rawtypes")
-	public static ArrayList<List> product_Added=new ArrayList<List>();
-	public static LinkedHashMap<String, ArrayList<String>> Product_added_details=new LinkedHashMap<String, ArrayList<String>>();
-	public static LinkedHashMap<String, ArrayList<String>> Product_wishlist_details=new LinkedHashMap<String, ArrayList<String>>();
+	
 	
 	
 	// declaring global variable protected

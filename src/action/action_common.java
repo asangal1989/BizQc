@@ -19,7 +19,6 @@ import com.aventstack.extentreports.markuputils.MarkupHelper;
 import elements_ui.element_locator;
 import global_utility.global_variables;
 import global_utility.handle_ajax_call;
-import gs_utilities.runner;
 
 public class action_common extends global_variables
 {
@@ -150,6 +149,9 @@ public class action_common extends global_variables
 		wait.until(ExpectedConditions.presenceOfElementLocated(element_locator));
 		Actions act=new Actions(Driver);
 		act.moveToElement(Driver.findElement(element_locator)).build().perform();
+		System.out.println(Driver.findElement(element_locator).getText());
+		
+		
 		if(Driver.findElement(element_locator).getText().trim().toLowerCase().replace("\"", "").contains(text.toString().trim().toLowerCase()))
 		{			
 			Status=1;			

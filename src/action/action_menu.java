@@ -46,9 +46,13 @@ public class action_menu extends global_variables {
 		
 			ArrayList<String> menuList_collection=new ArrayList<String>();
 			for(WebElement menu:menuList)
-			{				
-				if(menu.getAttribute("href").contains("javascript"))
-					menuList_collection.add(menu.getText().trim().toLowerCase().replace(" ", "_"));
+			{						
+				try {
+					if(menu.getAttribute("href").contains("javascript"))
+						menuList_collection.add(menu.getText().trim().toLowerCase().replace(" ", "_"));
+				} catch (Exception e) {
+					if(menu.getAttribute("class").contains("dropbtn dropbtn1"))
+						menuList_collection.add(menu.getText().trim().toLowerCase().replace(" ", "_"));				}				
 			}
 
 		for(String menutxt:menuList_collection)
@@ -86,6 +90,15 @@ public class action_menu extends global_variables {
 				case "menu":
 				{								
 					menu.click();
+					Thread.sleep(2000);
+					try 
+					{
+						Driver.findElement(By.xpath("//div[normalize-space(@id) = 'myDropdown']"));
+						WebElement menu_click=Driver.findElement(By.xpath("//div[normalize-space(@id) = 'myDropdown']//a[normalize-space(@data-target) = 'menu'] | //div[normalize-space(@id) = 'myDropdown']//a[normalize-space(@data-gtmd) = 'menu']"));
+						menu_click.click();
+					}
+					catch(Exception e)
+					{}
 					handle_ajax_call.HandleAjaxCall();
 					Thread.sleep(2000);
 					Status=common_action.VerifyURL(url+"#!menu");
