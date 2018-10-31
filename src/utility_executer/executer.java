@@ -155,6 +155,9 @@ public class executer extends global_variables{
 			log_system.info("******************** Verify Summary for Delivery ************************ ");
 			Status=testcase.VerifySummaryDelivery(client, "ByID", "menu_ordersection", String.valueOf(tax));
 			log_system.info("Status of Verify Summary Delivery "+Status);
+			log_system.info("******************** Verify Checkout for Delivery ************************ ");
+			Status=testcase.CheckoutForDelivery(client, City, "30",Address,String.valueOf(tax));
+			log_system.info("Status of checkout for Delivery "+Status);
 			log_system.info("******************** Closing Browser ************************ ");			
 			testcase.CloseBrowser(client);
 			log_system.info("Execution Complete for template "+ templateNumber);

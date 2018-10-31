@@ -1150,7 +1150,10 @@ public class action_product extends global_variables{
 	public int VerifySummary(String ElementKey, String ElementSelector,String Tax)  throws Exception
 	{
 		Status=0;
+		JavascriptExecutor js = (JavascriptExecutor)Driver;
+		js.executeScript("window.scrollTo(0, 0)");		
 		Thread.sleep(3000);
+		handle_ajax_call.HandleAjaxCall();
 		LinkedHashMap<String, gs_utilities.productdetails> ProductDetails_current=new LinkedHashMap<String, gs_utilities.productdetails>();
 		element_locator element_loc=new element_locator();
 		By element_locator=null;
@@ -1583,7 +1586,16 @@ public class action_product extends global_variables{
 							}
 							catch(Exception e1)
 							{
-								
+								try {
+									WebElement TipAmount=SummaryContainer.findElement(By.xpath(".//div[normalize-space(@class) = 'col-md-4 col-xs-4 text-align-right default_tip']"));
+									String TipSelected=TipAmount.getText().trim().replace("$", "").trim();
+									float tip=Float.parseFloat(TipSelected);
+									total_calculate=total_calculate+tip;
+									BigDecimal bg2=new BigDecimal(total_calculate).setScale(3, BigDecimal.ROUND_HALF_UP);
+									bg2=bg2.setScale(2, BigDecimal.ROUND_HALF_UP);
+									total_calculate=Float.parseFloat(bg2.toString());
+								} catch (Exception e) {
+								}
 							}
 							float order_total=Float.parseFloat(SummaryContainer.findElement(By.xpath(".//span[normalize-space(@class) = 'order_total']")).getText());
 							if(order_total==total_calculate)
