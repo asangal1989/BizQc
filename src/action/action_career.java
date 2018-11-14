@@ -76,7 +76,7 @@ public class action_career extends global_variables{
 					}
 										
 					handle_ajax_call.HandleAjaxCall();
-					Thread.sleep(1000);
+					Thread.sleep(3000);
 					handle_ajax_call.HandleAjaxCall();
 					
 					if(common_action.VerifyText("ByXPath", "//input[@id='c_name']/following-sibling::p", "Sorry, We don't talk to strangers")!=1)
@@ -161,9 +161,9 @@ public class action_career extends global_variables{
 					}
 						
 					
-					handle_ajax_call.HandleAjaxCall();
-					Thread.sleep(1000);
-					handle_ajax_call.HandleAjaxCall();
+					
+					Thread.sleep(3000);
+					
 					
 					if(common_action.VerifyText("ByXPath", "//div[normalize-space(@class) = 'application-success']", "Thank you for your message. We will try to answer as soon as possible.")!=1)
 					{

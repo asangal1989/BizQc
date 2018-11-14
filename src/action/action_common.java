@@ -87,7 +87,7 @@ public class action_common extends global_variables
 		        LogEntries logEntries = logs.get(LogType.BROWSER);
 		        for(LogEntry logEntry :logEntries)
 		        {
-		        	System.out.println();
+		        	
 		            if (logEntry.getLevel().getName().equals("SEVERE")) {
 		            	error.add(logEntry.getMessage());
 		                log_system.error("Error Message in Console:"+logEntry.getMessage());
@@ -125,36 +125,68 @@ public class action_common extends global_variables
 		return Status;
 	}
 	
+	
 	public int Click(WebElement element)  throws Exception
 	{	
 		
 		
+		try {
+			Actions act=new Actions(Driver);
+			act.moveToElement(element).build().perform();
+			do
+			{
+				Thread.sleep(200);
+			}while(!element.isDisplayed() && !element.isEnabled());
+					
+			element.click();
+			Status=1;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			
+		}
+		return Status;
+	}
+	
+	
+	public int SelectTakeout(String ElementKey,String ElementSelector)  throws Exception
+	{	
+		
+		element_locator=element_loc.getElement(ElementKey, ElementSelector);		
 		Actions act=new Actions(Driver);
-		act.moveToElement(element).build().perform();
-		do
-		{
-			Thread.sleep(200);
-		}while(!element.isDisplayed() && !element.isEnabled());
-				
-		element.click();
-		Status=1;
+		
+		try {
+			Driver.get(Driver.getCurrentUrl());
+			Thread.sleep(3000);
+			WebElement takeout=Driver.findElement(element_locator);
+			act.moveToElement(takeout).build().perform();
+			takeout.click();		
+			Status=1;
+		} catch (Exception e) {
+			Status=2;
+		}
+		
+		
+		
 		return Status;
 	}
 	
 	public int VerifyText(String ElementKey,String ElementSelector,String text) throws Exception
 	{
-		Thread.sleep(2000);
-		element_locator=element_loc.getElement(ElementKey, ElementSelector);
-		WebDriverWait wait = new WebDriverWait(Driver, 40);
-		wait.until(ExpectedConditions.presenceOfElementLocated(element_locator));
-		Actions act=new Actions(Driver);
-		act.moveToElement(Driver.findElement(element_locator)).build().perform();
-		System.out.println(Driver.findElement(element_locator).getText());
-		
-		
-		if(Driver.findElement(element_locator).getText().trim().toLowerCase().replace("\"", "").contains(text.toString().trim().toLowerCase()))
-		{			
-			Status=1;			
+		try {
+			Thread.sleep(2000);
+			element_locator=element_loc.getElement(ElementKey, ElementSelector);
+			WebDriverWait wait = new WebDriverWait(Driver, 40);
+			wait.until(ExpectedConditions.presenceOfElementLocated(element_locator));
+			Actions act=new Actions(Driver);
+			act.moveToElement(Driver.findElement(element_locator)).build().perform();
+			
+			
+			if(Driver.findElement(element_locator).getText().trim().toLowerCase().replace("\"", "").contains(text.toString().trim().toLowerCase()))
+			{			
+				Status=1;			
+			}
+		} catch (Exception e) {
+			Status=0;
 		}				
 		
 		return Status;
@@ -192,7 +224,6 @@ public class action_common extends global_variables
 			String url="<img width='100px' src=\""+path_lib_screenshotfull+"\" data-src=\""+path_lib_screenshotfull+"\" data-featherlight=\""+path_lib_screenshotfull+"\">";					
 			String[][] desc={{"Descritpion","Screenshot"},{Desc,url}};
 			qc_testinfo.log(com.aventstack.extentreports.Status.PASS, MarkupHelper.createTable(desc));
-			System.out.println();
 			break;
 		}
 		case 0:

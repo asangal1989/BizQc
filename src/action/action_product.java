@@ -359,7 +359,9 @@ public class action_product extends global_variables{
 						if(subcategory_random.findElement(By.xpath(".//a[normalize-space(@class) = 'ubtn btn_addtocard btn_addtoorder']")).isDisplayed())
 						{
 							subcategory_random.findElement(By.xpath(".//a[normalize-space(@class) = 'ubtn btn_addtocard btn_addtoorder']")).click();
-							
+							handle_ajax_call.HandleAjaxCall();
+							Thread.sleep(1000);
+							handle_ajax_call.HandleAjaxCall();
 						}
 						else
 						{
@@ -553,6 +555,14 @@ public class action_product extends global_variables{
 			handle_ajax_call.HandleAjaxCall();
 		}
 		
+		try {
+			if(Driver.findElement(By.xpath("//div[normalize-space(@class) = 'a_modal']")).isDisplayed())
+			{
+				Driver.findElement(By.xpath("//a[normalize-space(@class) = 'i_close close']")).click();
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+		}
 		return Status;
 	}
 
@@ -1067,8 +1077,8 @@ public class action_product extends global_variables{
 						WebElement delete_Product=Driver.findElement(By.xpath(".//a[normalize-space(@class) = 't-delete-order ubtn'][normalize-space(@data-id) = '"+Product_Item+"']"));
 											
 
-						JavascriptExecutor js = (JavascriptExecutor)Driver;
-						js.executeScript("window.scrollTo(0, 0)");
+						/*JavascriptExecutor js = (JavascriptExecutor)Driver;
+						js.executeScript("window.scrollTo(0, 0)");*/
 						act.moveToElement(delete_Product).build().perform();
 						delete_Product.click();
 						handle_ajax_call.HandleAjaxCall();
@@ -1097,6 +1107,7 @@ public class action_product extends global_variables{
 					Product_Item=Product_item_list.get(index);
 					WebElement delete_Product=Driver.findElement(By.xpath(".//a[normalize-space(@class) = 't-delete-order ubtn'][normalize-space(@data-id) = '"+Product_Item+"']"));
 					act.moveToElement(delete_Product).build().perform();
+					@SuppressWarnings("unused")
 					int indexcount=0;
 					for(int i=0;i<ProductDetails.size();i++)
 					{
@@ -1150,8 +1161,8 @@ public class action_product extends global_variables{
 	public int VerifySummary(String ElementKey, String ElementSelector,String Tax)  throws Exception
 	{
 		Status=0;
-		JavascriptExecutor js = (JavascriptExecutor)Driver;
-		js.executeScript("window.scrollTo(0, 0)");		
+		/*JavascriptExecutor js = (JavascriptExecutor)Driver;
+		js.executeScript("window.scrollTo(0, 500)");*/		
 		Thread.sleep(3000);
 		handle_ajax_call.HandleAjaxCall();
 		LinkedHashMap<String, gs_utilities.productdetails> ProductDetails_current=new LinkedHashMap<String, gs_utilities.productdetails>();
@@ -1250,6 +1261,8 @@ public class action_product extends global_variables{
 						{
 							if(!ProductDetails.get(Compair).getInstructions().equals(ProductDetails_current.get(Compair).getInstructions()))
 							{
+								System.out.println(ProductDetails.get(Compair).getInstructions());
+								System.out.println(ProductDetails_current.get(Compair).getInstructions());
 								log_system.error("Instruction not mapped "+ ProductDetails.get(Compair).getProductName());
 								errorcount++;
 							}
@@ -1652,10 +1665,10 @@ public class action_product extends global_variables{
 			{
 				act.moveToElement(delivery);
 				delivery.click();
-				Thread.sleep(2000);
+				Thread.sleep(4000);
 				WebElement address_txt=Driver.findElement(By.xpath("//input[normalize-space(@id) = 'searchTextField']"));
 				address_txt.sendKeys("Miami, FL, USA");
-				Thread.sleep(2000);
+				Thread.sleep(4000);
 				List<WebElement> address_list=Driver.findElements(By.xpath("//div[normalize-space(@class) = 'pac-container pac-logo']//div[normalize-space(@class) = 'pac-item']"));
 				for(WebElement address_list_irt:address_list)
 				{
@@ -1665,7 +1678,7 @@ public class action_product extends global_variables{
 						address_list_irt.click();
 						Thread.sleep(2000);						
 						break;
-					} catch (Exception e) {						
+					} catch (Exception e) {	
 					}					
 				}
 				
@@ -1703,9 +1716,10 @@ public class action_product extends global_variables{
 		Status=0;								
 		try {
 			WebElement DeliveryTime=Driver.findElement(By.xpath("//span[normalize-space(@class) = 't-operation-hours']"));
-			String TimeZone=DeliveryTime.getText();
-			ArrayList<String> TimeSlot=getTimeSlot(TimeZone, timeslot, City);
 			Calendar actualtime=timeSelect(City);
+			
+			
+			
 			String OrderType=null;
 			try {
 				OrderType=Driver.findElement(By.xpath("//span[normalize-space(@class) = 'text-capitalize']")).getText().toLowerCase().trim();
@@ -1714,19 +1728,43 @@ public class action_product extends global_variables{
 			}
 			
 			if(OrderType.contains("delivery"))
-			{						
-				String ActiveTimeSlot=ActiveTimeSlot(TimeSlot,actualtime,City);
-				String DisplayedTime=Driver.findElement(By.xpath("//p[normalize-space(@class) = 'txt_upper']")).getText().split(",")[1].trim();				
-				if(ActiveTimeSlot.contains(DisplayedTime))
+			{
+				if(Driver.findElement(By.xpath("//p[normalize-space(@class) = 'txt_upper']")).getText().contains("Today"))
 				{
-					Status=1;
+					String TimeZone=DeliveryTime.getText();
+					ArrayList<String> TimeSlot=getTimeSlotDelivery(TimeZone, timeslot, City);
+					String ActiveTimeSlot=ActiveTimeSlot(TimeSlot,actualtime,City);
+					String DisplayedTime=Driver.findElement(By.xpath("//p[normalize-space(@class) = 'txt_upper']")).getText().split(",")[1].trim();				
+					if(ActiveTimeSlot.contains(DisplayedTime))
+					{
+						Status=1;
+					}
 				}
+				else
+				{
+					Status=2;
+				}
+				
 			}
 			else if(OrderType.contains("takeout"))
 			{
+				String TimeZone=getTimeZone(actualtime);
+				ArrayList<String> TimeSlot=getTimeSlottakeout(TimeZone, timeslot, City);
 				TimeSlot.remove(0);
-				String ActiveTimeSlot=ActiveTimeSlot(TimeSlot,actualtime,City);
-				String DisplayedTime=Driver.findElement(By.xpath("//p[normalize-space(@class) = 'txt_upper']")).getText().split(",")[1].trim();				
+				String ActiveTimeSlot=null;
+				String DisplayedTime=null;
+				if(TimeZone.contains("incressed Time"))
+				{
+					ActiveTimeSlot=TimeSlot.get(0);
+					DisplayedTime=Driver.findElement(By.xpath("//p[normalize-space(@class) = 'txt_upper']")).getText().split(",")[2].trim();
+				}
+				else
+				{
+					ActiveTimeSlot=ActiveTimeSlot(TimeSlot,actualtime,City);
+					DisplayedTime=Driver.findElement(By.xpath("//p[normalize-space(@class) = 'txt_upper']")).getText().split(",")[1].trim();
+				}
+				
+								
 				if(ActiveTimeSlot.contains(DisplayedTime))
 				{
 					Status=1;
@@ -1740,6 +1778,52 @@ public class action_product extends global_variables{
 		return Status;
 	}
 
+	
+	
+	public String getTimeZone(Calendar Time)
+	{
+		String TimeZone=null; 
+		String days=null;
+		int count_incressby=0;
+		do
+		{
+			String[] dayName = {"Saturday","Sunday", "Monday",
+	                "Tuesday", "Wednesday", "Thursday", "Friday", };
+			
+			 days = dayName[Time.get(Calendar.DAY_OF_WEEK)];
+			 
+			
+			WebElement times=Driver.findElement(By.xpath("//div[normalize-space(@class) = 'txt_contactdetail y-resCalender']"));
+			List<WebElement> timeZone=times.findElements(By.xpath(".//div[normalize-space(@class) = 'row borderdotted']"));
+			for(WebElement timeZne_itr:timeZone)
+			{
+				
+				if(timeZne_itr.getText().contains(days))
+				{
+					TimeZone=timeZne_itr.getText();
+					break;				
+				}				
+			}
+			
+			if(TimeZone==null)				
+			{
+				Time.add(Calendar.DAY_OF_WEEK, 1);
+				count_incressby++;
+			}
+			
+		}while(TimeZone==null);
+		
+		if(TimeZone!=null)
+		TimeZone=TimeZone.split(days)[1];
+		
+		if(count_incressby>0)
+		{
+			TimeZone=TimeZone+" "+"incressed Time";
+		}
+		
+		 return TimeZone;
+	}
+	
 	
 	public String ActiveTimeSlot(ArrayList<String> TimeSlot,Calendar actualtime,String City)
 	{		
@@ -1785,7 +1869,7 @@ public class action_product extends global_variables{
 		{
 		case "New York":
 		{
-			calendar.add(Calendar.HOUR,-9);
+			calendar.add(Calendar.HOUR,-10);
 			calendar.add(Calendar.MINUTE,-30);
 			break;
 		}
@@ -1807,102 +1891,131 @@ public class action_product extends global_variables{
 	}
 	
 	
-	public ArrayList<String> getTimeSlot(String TimeZone, String timeslot,String City) throws ParseException
+	public ArrayList<String> getTimeSlottakeout(String TimeZone, String timeslot,String City) throws ParseException
 	{
 		ArrayList<String> timeslotlist=new ArrayList<String>();
+		
+		int count_incerssedBy=0;
+		
+		if(TimeZone.contains("incressed Time"))
+		{
+			count_incerssedBy++;
+			TimeZone=TimeZone.split("incressed Time")[0].trim();
+		}
+		
 		if(TimeZone!=null)
 		{
-			if(TimeZone.contains(","))
+			if(TimeZone.contains(",") || TimeZone.contains("\n"))
 			{
-				String[] timeZoneCollection=TimeZone.split(",");
+				String[] timeZoneCollection=null;
+				
+				if(TimeZone.contains(","))
+					timeZoneCollection=TimeZone.split(",");
+				
+				if(TimeZone.contains("\n"))
+					timeZoneCollection=TimeZone.split("\n");
+				
 				for(String timeZone_tmp:timeZoneCollection)
 				{
 					TimeZone=timeZone_tmp.trim();
-					String startTime=TimeZone.split("-")[0].trim();	
-					int StartHour=Integer.parseInt(TimeZone.split("-")[0].trim().split(" ")[0].trim().split(":")[0].trim());
-					int StartMin=Integer.parseInt(TimeZone.split("-")[0].trim().split(" ")[0].trim().split(":")[1].trim());
-					String endTime=TimeZone.split("-")[1].trim();
-					int endHour=Integer.parseInt(TimeZone.split("-")[1].trim().split(" ")[0].trim().split(":")[0].trim());
-					int endMin=Integer.parseInt(TimeZone.split("-")[1].trim().split(" ")[0].trim().split(":")[1].trim());
-					Calendar cal_Start=Calendar.getInstance();
-					Calendar cal_end=Calendar.getInstance();
-					if(startTime.contains("AM"))
+					if(TimeZone.length()>0)
 					{
-						cal_Start.set(Calendar.HOUR, StartHour);
-						cal_Start.set(Calendar.MINUTE, StartMin);
-						cal_Start.set(Calendar.SECOND, 0);
-						cal_Start.set(Calendar.AM_PM,Calendar.AM);			
-					}
-					else
-					{
-						cal_Start.set(Calendar.HOUR, StartHour);
-						cal_Start.set(Calendar.MINUTE, StartMin);
-						cal_Start.set(Calendar.SECOND, 0);
-						cal_Start.set(Calendar.AM_PM,Calendar.PM);
-					}
-					
-					if(endTime.contains("AM"))
-					{
-						cal_end.set(Calendar.HOUR, endHour);
-						cal_end.set(Calendar.MINUTE, endMin);
-						cal_end.set(Calendar.SECOND, 0);
-						cal_end.set(Calendar.AM_PM,Calendar.AM);
-					}
-					else
-					{
-						cal_end.set(Calendar.HOUR, endHour);
-						cal_end.set(Calendar.MINUTE, endMin);
-						cal_end.set(Calendar.SECOND, 0);
-						cal_end.set(Calendar.AM_PM,Calendar.PM);
-					}
-					
-					Calendar currenttime=timeSelect(City);
-					
-					
-					do
-					{
-						if(currenttime.before(cal_Start))
+						String startTime=TimeZone.split("to")[0].trim();	
+						int StartHour=Integer.parseInt(TimeZone.split("to")[0].trim().split(" ")[0].trim().split(":")[0].trim());
+						int StartMin=Integer.parseInt(TimeZone.split("to")[0].trim().split(" ")[0].trim().split(":")[1].trim());
+						String endTime=TimeZone.split("to")[1].trim();
+						int endHour=Integer.parseInt(TimeZone.split("to")[1].trim().split(" ")[0].trim().split(":")[0].trim());
+						int endMin=Integer.parseInt(TimeZone.split("to")[1].trim().split(" ")[0].trim().split(":")[1].trim());
+						Calendar cal_Start=Calendar.getInstance();
+						Calendar cal_end=Calendar.getInstance();
+						if(startTime.contains("12:00 AM"))
 						{
-							String Hours=String.valueOf(cal_Start.get(Calendar.HOUR));
-							String min=String.valueOf(cal_Start.get(Calendar.MINUTE));
-							int DayNightFormat=cal_Start.get(Calendar.AM_PM);
-							
-							String AM_PM=null;
-							if(DayNightFormat!=1)
-								AM_PM="AM";
-							else
-								AM_PM="PM";
-							
-							if(min.equals("0"))
-							min="00";
-							
-							if(Hours.equals("0"))
-							{
-								Hours="12";
-							}
-							
-							if(Hours.length()==1)
-							{
-								Hours="0"+Hours;
-							}
-							timeslotlist.add(Hours+":"+min+" "+AM_PM);
+							StartHour=0;
+						}
+						if(startTime.contains("AM"))
+						{
+							cal_Start.set(Calendar.HOUR, StartHour);
+							cal_Start.set(Calendar.MINUTE, StartMin);
+							cal_Start.set(Calendar.SECOND, 0);
+							cal_Start.set(Calendar.AM_PM,Calendar.AM);					
+						}
+						else
+						{
+							cal_Start.set(Calendar.HOUR, StartHour);
+							cal_Start.set(Calendar.MINUTE, StartMin);
+							cal_Start.set(Calendar.SECOND, 0);
+							cal_Start.set(Calendar.AM_PM,Calendar.PM);
 							
 						}
 						
-						cal_Start.add(Calendar.MINUTE, Integer.parseInt(timeslot));
+						if(endTime.contains("AM"))
+						{
+							cal_end.set(Calendar.HOUR, endHour);
+							cal_end.set(Calendar.MINUTE, endMin);
+							cal_end.set(Calendar.SECOND, 0);
+							cal_end.set(Calendar.AM_PM,Calendar.AM);
+						}
+						else
+						{
+							cal_end.set(Calendar.HOUR, endHour);
+							cal_end.set(Calendar.MINUTE, endMin);
+							cal_end.set(Calendar.SECOND, 0);
+							if(endHour!=12)
+								cal_end.set(Calendar.AM_PM,Calendar.PM);
+							else
+								cal_end.set(Calendar.AM_PM,Calendar.AM);
+						}
+						
 						System.out.println(cal_Start.getTime());
 						System.out.println(cal_end.getTime());
-					}while(!cal_end.before(cal_Start));
+						Calendar currenttime=timeSelect(City);
+						
+						
+						do
+						{
+							if(currenttime.before(cal_Start))
+							{
+								String Hours=String.valueOf(cal_Start.get(Calendar.HOUR));
+								String min=String.valueOf(cal_Start.get(Calendar.MINUTE));
+								int DayNightFormat=cal_Start.get(Calendar.AM_PM);
+								
+								String AM_PM=null;
+								if(DayNightFormat!=1)
+									AM_PM="AM";
+								else
+									AM_PM="PM";
+								
+								if(min.equals("0"))
+								min="00";
+								
+								if(Hours.equals("0"))
+								{
+									Hours="12";
+								}
+								
+								if(Hours.length()==1)
+								{
+									Hours="0"+Hours;
+								}
+								timeslotlist.add(Hours+":"+min+" "+AM_PM);
+								
+							}
+							
+							cal_Start.add(Calendar.MINUTE, Integer.parseInt(timeslot));
+							
+						}while(!cal_end.before(cal_Start));
+					}
+					
 				}
 			}
 			else
 			{
-				String startTime=TimeZone.split("-")[0].trim();	
-				int StartHour=Integer.parseInt(TimeZone.split("-")[0].trim().split(" ")[0].trim().split(":")[0].trim());
-				int StartMin=Integer.parseInt(TimeZone.split("-")[0].trim().split(" ")[0].trim().split(":")[1].trim());
-				String endTime=TimeZone.split("-")[1].trim();
-				int endHour=Integer.parseInt(TimeZone.split("-")[1].trim().split(" ")[0].trim().split(":")[0].trim());
-				int endMin=Integer.parseInt(TimeZone.split("-")[1].trim().split(" ")[0].trim().split(":")[1].trim());
+				String startTime=TimeZone.split("to")[0].trim();	
+				int StartHour=Integer.parseInt(TimeZone.split("to")[0].trim().split(" ")[0].trim().split(":")[0].trim());
+				int StartMin=Integer.parseInt(TimeZone.split("to")[0].trim().split(" ")[0].trim().split(":")[1].trim());
+				String endTime=TimeZone.split("to")[1].trim();
+				int endHour=Integer.parseInt(TimeZone.split("to")[1].trim().split(" ")[0].trim().split(":")[0].trim());
+				int endMin=Integer.parseInt(TimeZone.split("to")[1].trim().split(" ")[0].trim().split(":")[1].trim());
 				Calendar cal_Start=Calendar.getInstance();
 				Calendar cal_end=Calendar.getInstance();
 				if(startTime.contains("12:00 AM"))
@@ -1914,7 +2027,7 @@ public class action_product extends global_variables{
 					cal_Start.set(Calendar.HOUR, StartHour);
 					cal_Start.set(Calendar.MINUTE, StartMin);
 					cal_Start.set(Calendar.SECOND, 0);
-					cal_Start.set(Calendar.AM_PM,Calendar.AM);	
+					cal_Start.set(Calendar.AM_PM,Calendar.AM);					
 				}
 				else
 				{
@@ -1922,6 +2035,7 @@ public class action_product extends global_variables{
 					cal_Start.set(Calendar.MINUTE, StartMin);
 					cal_Start.set(Calendar.SECOND, 0);
 					cal_Start.set(Calendar.AM_PM,Calendar.PM);
+					
 				}
 				
 				if(endTime.contains("AM"))
@@ -1936,9 +2050,13 @@ public class action_product extends global_variables{
 					cal_end.set(Calendar.HOUR, endHour);
 					cal_end.set(Calendar.MINUTE, endMin);
 					cal_end.set(Calendar.SECOND, 0);
-					cal_end.set(Calendar.AM_PM,Calendar.PM);
+					if(endHour!=12)
+						cal_end.set(Calendar.AM_PM,Calendar.PM);
+					else
+						cal_end.set(Calendar.AM_PM,Calendar.AM);
 				}
-				
+				System.out.println(cal_Start.getTime());
+				System.out.println(cal_end.getTime());
 				Calendar currenttime=timeSelect(City);
 				
 				
@@ -1973,14 +2091,244 @@ public class action_product extends global_variables{
 					}
 					
 					cal_Start.add(Calendar.MINUTE, Integer.parseInt(timeslot));
-					System.out.println(cal_Start.getTime());
-					System.out.println(cal_end.getTime());
+					
 				}while(!cal_end.before(cal_Start));
 			}
 			
 			
 		}
+		
+		ArrayList<String> timeslotlist_temp=new ArrayList<String>();
+		
+		if(count_incerssedBy>0)
+		{
+			timeslotlist_temp.add(timeslotlist.get(0));
+			timeslotlist_temp.add(timeslotlist.get(1));
+			timeslotlist.clear();
+			timeslotlist=timeslotlist_temp;
+		}
 		return timeslotlist;				
+	}
+	
+	
+	
+	public ArrayList<String> getTimeSlotDelivery(String TimeZone, String timeslot,String City) throws ParseException
+	{
+ArrayList<String> timeslotlist=new ArrayList<String>();
+		
+		int count_incerssedBy=0;
+		
+		if(TimeZone.contains("incressed Time"))
+		{
+			count_incerssedBy++;
+			TimeZone=TimeZone.split("incressed Time")[0].trim();
+		}
+		
+		if(TimeZone!=null)
+		{
+			if(TimeZone.contains(",") || TimeZone.contains("\n"))
+			{
+				String[] timeZoneCollection=null;
+				
+				if(TimeZone.contains(","))
+					timeZoneCollection=TimeZone.split(",");
+				
+				if(TimeZone.contains("\n"))
+					timeZoneCollection=TimeZone.split("\n");
+				
+				for(String timeZone_tmp:timeZoneCollection)
+				{
+					TimeZone=timeZone_tmp.trim();
+					if(TimeZone.length()>0)
+					{
+						String startTime=TimeZone.split("-")[0].trim();	
+						int StartHour=Integer.parseInt(TimeZone.split("-")[0].trim().split(" ")[0].trim().split(":")[0].trim());
+						int StartMin=Integer.parseInt(TimeZone.split("-")[0].trim().split(" ")[0].trim().split(":")[1].trim());
+						String endTime=TimeZone.split("-")[1].trim();
+						int endHour=Integer.parseInt(TimeZone.split("-")[1].trim().split(" ")[0].trim().split(":")[0].trim());
+						int endMin=Integer.parseInt(TimeZone.split("-")[1].trim().split(" ")[0].trim().split(":")[1].trim());
+						Calendar cal_Start=Calendar.getInstance();
+						Calendar cal_end=Calendar.getInstance();
+						if(startTime.contains("12:00 AM"))
+						{
+							StartHour=0;
+						}
+						if(startTime.contains("AM"))
+						{
+							cal_Start.set(Calendar.HOUR, StartHour);
+							cal_Start.set(Calendar.MINUTE, StartMin);
+							cal_Start.set(Calendar.SECOND, 0);
+							cal_Start.set(Calendar.AM_PM,Calendar.AM);					
+						}
+						else
+						{
+							cal_Start.set(Calendar.HOUR, StartHour);
+							cal_Start.set(Calendar.MINUTE, StartMin);
+							cal_Start.set(Calendar.SECOND, 0);
+							cal_Start.set(Calendar.AM_PM,Calendar.PM);
+							
+						}
+						
+						if(endTime.contains("AM"))
+						{
+							cal_end.set(Calendar.HOUR, endHour);
+							cal_end.set(Calendar.MINUTE, endMin);
+							cal_end.set(Calendar.SECOND, 0);
+							cal_end.set(Calendar.AM_PM,Calendar.AM);
+						}
+						else
+						{
+							cal_end.set(Calendar.HOUR, endHour);
+							cal_end.set(Calendar.MINUTE, endMin);
+							cal_end.set(Calendar.SECOND, 0);
+							if(endHour!=12)
+								cal_end.set(Calendar.AM_PM,Calendar.PM);
+							else
+								cal_end.set(Calendar.AM_PM,Calendar.AM);
+						}
+						
+						System.out.println(cal_Start.getTime());
+						System.out.println(cal_end.getTime());
+						Calendar currenttime=timeSelect(City);
+						
+						
+						do
+						{
+							if(currenttime.before(cal_Start))
+							{
+								String Hours=String.valueOf(cal_Start.get(Calendar.HOUR));
+								String min=String.valueOf(cal_Start.get(Calendar.MINUTE));
+								int DayNightFormat=cal_Start.get(Calendar.AM_PM);
+								
+								String AM_PM=null;
+								if(DayNightFormat!=1)
+									AM_PM="AM";
+								else
+									AM_PM="PM";
+								
+								if(min.equals("0"))
+								min="00";
+								
+								if(Hours.equals("0"))
+								{
+									Hours="12";
+								}
+								
+								if(Hours.length()==1)
+								{
+									Hours="0"+Hours;
+								}
+								timeslotlist.add(Hours+":"+min+" "+AM_PM);
+								
+							}
+							
+							cal_Start.add(Calendar.MINUTE, Integer.parseInt(timeslot));
+							
+						}while(!cal_end.before(cal_Start));
+					}
+					
+				}
+			}
+			else
+			{
+				String startTime=TimeZone.split("-")[0].trim();	
+				int StartHour=Integer.parseInt(TimeZone.split("-")[0].trim().split(" ")[0].trim().split(":")[0].trim());
+				int StartMin=Integer.parseInt(TimeZone.split("-")[0].trim().split(" ")[0].trim().split(":")[1].trim());
+				String endTime=TimeZone.split("-")[1].trim();
+				int endHour=Integer.parseInt(TimeZone.split("-")[1].trim().split(" ")[0].trim().split(":")[0].trim());
+				int endMin=Integer.parseInt(TimeZone.split("-")[1].trim().split(" ")[0].trim().split(":")[1].trim());
+				Calendar cal_Start=Calendar.getInstance();
+				Calendar cal_end=Calendar.getInstance();
+				if(startTime.contains("12:00 AM"))
+				{
+					StartHour=0;
+				}
+				if(startTime.contains("AM"))
+				{
+					cal_Start.set(Calendar.HOUR, StartHour);
+					cal_Start.set(Calendar.MINUTE, StartMin);
+					cal_Start.set(Calendar.SECOND, 0);
+					cal_Start.set(Calendar.AM_PM,Calendar.AM);					
+				}
+				else
+				{
+					cal_Start.set(Calendar.HOUR, StartHour);
+					cal_Start.set(Calendar.MINUTE, StartMin);
+					cal_Start.set(Calendar.SECOND, 0);
+					cal_Start.set(Calendar.AM_PM,Calendar.PM);
+					
+				}
+				
+				if(endTime.contains("AM"))
+				{
+					cal_end.set(Calendar.HOUR, endHour);
+					cal_end.set(Calendar.MINUTE, endMin);
+					cal_end.set(Calendar.SECOND, 0);
+					cal_end.set(Calendar.AM_PM,Calendar.AM);
+				}
+				else
+				{
+					cal_end.set(Calendar.HOUR, endHour);
+					cal_end.set(Calendar.MINUTE, endMin);
+					cal_end.set(Calendar.SECOND, 0);
+					if(endHour!=12)
+						cal_end.set(Calendar.AM_PM,Calendar.PM);
+					else
+						cal_end.set(Calendar.AM_PM,Calendar.AM);
+				}
+				System.out.println(cal_Start.getTime());
+				System.out.println(cal_end.getTime());
+				Calendar currenttime=timeSelect(City);
+				
+				
+				do
+				{
+					if(currenttime.before(cal_Start))
+					{
+						String Hours=String.valueOf(cal_Start.get(Calendar.HOUR));
+						String min=String.valueOf(cal_Start.get(Calendar.MINUTE));
+						int DayNightFormat=cal_Start.get(Calendar.AM_PM);
+						
+						String AM_PM=null;
+						if(DayNightFormat!=1)
+							AM_PM="AM";
+						else
+							AM_PM="PM";
+						
+						if(min.equals("0"))
+						min="00";
+						
+						if(Hours.equals("0"))
+						{
+							Hours="12";
+						}
+						
+						if(Hours.length()==1)
+						{
+							Hours="0"+Hours;
+						}
+						timeslotlist.add(Hours+":"+min+" "+AM_PM);
+						
+					}
+					
+					cal_Start.add(Calendar.MINUTE, Integer.parseInt(timeslot));
+					
+				}while(!cal_end.before(cal_Start));
+			}
+			
+			
+		}
+		
+		ArrayList<String> timeslotlist_temp=new ArrayList<String>();
+		
+		if(count_incerssedBy>0)
+		{
+			timeslotlist_temp.add(timeslotlist.get(0));
+			timeslotlist_temp.add(timeslotlist.get(1));
+			timeslotlist.clear();
+			timeslotlist=timeslotlist_temp;
+		}
+		return timeslotlist;					
 	}
 	
 	public String getcurrentDate(Calendar Time)

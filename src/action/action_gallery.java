@@ -79,6 +79,14 @@ public class action_gallery extends global_variables{
 				Thread.sleep(1000);
 				handle_ajax_call.HandleAjaxCall();
 				
+				WebElement ele_gallery_pre_btn1=Driver.findElement(By.xpath("//div[normalize-space(@id) = 'gallery']"));
+				ele_gallery_pre_btn1=ele_gallery_pre_btn1.findElement(By.xpath(".//div[normalize-space(@class) = 'owl-prev']"));
+				act.moveToElement(ele_gallery_pre_btn1).build().perform();
+				common_action.Click(ele_gallery_pre_btn1);
+				handle_ajax_call.HandleAjaxCall();
+				Thread.sleep(1000);
+				handle_ajax_call.HandleAjaxCall();
+				
 				if(gallerypop!=null)
 				{
 					Driver.findElement(By.xpath("//a[normalize-space(@class) = 'i_close close']")).click();

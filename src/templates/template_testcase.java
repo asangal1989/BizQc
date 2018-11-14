@@ -175,6 +175,22 @@ public class template_testcase extends global_variables{
 		return Status;
 	}
 	
+	
+	public int SelectTakeout(String ElementKey,String ElementSelector,String Client)
+	{
+		try {
+			
+			Status=common_action.SelectTakeout(ElementKey, ElementSelector);
+		} catch (Exception e) {
+			log_system.error("Execution failed to Add Product");
+			log_system.error(e.getMessage());
+			Status=0;
+		}
+		getscreenshot.screenshot(path_lib_screenshot+Client+"\\", Thread.currentThread().getStackTrace()[1].getMethodName());
+		common_action.updateReport(Status,Thread.currentThread().getStackTrace()[1].getMethodName());
+		return Status;
+	}
+	
 	public int AddEditProduct(String Client)
 	{
 		try {
@@ -298,11 +314,11 @@ public class template_testcase extends global_variables{
 	}
 	
 	
-	public int CheckoutForDelivery(String Client,String City,String timeslot,String Address,String Tax)
+	public int CheckoutForTakeoutWithEdit(String Client,String City,String timeslot,String Address,String Tax)
 	{
 		try {
 			
-			Status=checkout_action.CheckoutforDelivery(City,timeslot,Address,Tax);
+			Status=checkout_action.CheckoutforTakeoutWithEdit(City,timeslot,Address,Tax);
 		} catch (Exception e) {
 			log_system.error("Execution failed for checkout of takeout");
 			log_system.error(e.getMessage());
@@ -313,6 +329,38 @@ public class template_testcase extends global_variables{
 		return Status;
 	}
 	
+	
+	public int CheckoutForDelivery(String Client,String City,String timeslot,String Address,String Tax)
+	{
+		try {
+			
+			Status=checkout_action.CheckoutforDelivery(City,timeslot,Address,Tax);
+		} catch (Exception e) {
+			log_system.error("Execution failed for checkout of Delivery");
+			log_system.error(e.getMessage());
+			Status=0;
+		}
+		getscreenshot.screenshot(path_lib_screenshot+Client+"\\", Thread.currentThread().getStackTrace()[1].getMethodName());
+		common_action.updateReport(Status,Thread.currentThread().getStackTrace()[1].getMethodName());
+		return Status;
+	}
+	
+
+	public int CheckoutForDeliveryEdit(String Client,String City,String timeslot,String Address,String Tax)
+	{
+		try {
+			
+			Status=checkout_action.CheckoutforDeliveryEdit(City,timeslot,Address,Tax);
+		} catch (Exception e) {
+			log_system.error("Execution failed for checkout of Delivery");
+			log_system.error(e.getMessage());
+			Status=0;
+		}
+		getscreenshot.screenshot(path_lib_screenshot+Client+"\\", Thread.currentThread().getStackTrace()[1].getMethodName());
+		common_action.updateReport(Status,Thread.currentThread().getStackTrace()[1].getMethodName());
+		return Status;
+	}
+
 	
 	public int ReserveATable(String Client)
 	{
