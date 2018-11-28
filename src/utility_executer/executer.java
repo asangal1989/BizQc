@@ -16,8 +16,7 @@ public class executer extends global_variables{
 	reader_writer.excelWriter writer=new reader_writer.excelWriter();
 	template_testcase testcase=new template_testcase();
 	public void executer_selector(HashMap<String, runner> executable) throws IOException
-	{				
-		Properties prop=new Properties();
+	{						Properties prop=new Properties();
 		InputStream in=new FileInputStream(path_lib_properties+"path_testcase.properties");
 		prop.load(in);
 		
@@ -146,25 +145,31 @@ public class executer extends global_variables{
 			log_system.info("******************** Verify Checkout for Delivery ************************ ");
 			Status=testcase.CheckoutForDeliveryEdit(client, City, "30",Address,String.valueOf(tax));
 			log_system.info("Status of checkout for Delivery "+Status);
+			log_system.info("******************** Delete All Product ************************ ");
+			Status=testcase.DeleteProduct(client, "all");
+			log_system.info("Status of Delete All Product "+Status);
 			log_system.info("********************  Verify Add Product ************************ ");
 			Status=testcase.AddProduct(client);
 			log_system.info("Status of Add Product "+Status);
-			log_system.info("********************  Verify Add Product ************************ ");
+			log_system.info("********************  Verify Add Product ************************");
 			Status=testcase.AddProduct(client);
 			log_system.info("Status of Add Product "+Status);
-			log_system.info("******************** Click on takeout ************************ ");			
+			log_system.info("******************** Add Edit Product ************************");
+			Status=testcase.AddEditProduct(client);
+			log_system.info("Status of Add Edit Product "+Status);
+			log_system.info("******************** Click on takeout ************************");
 			Status=testcase.SelectTakeout("ByXPath","//label[normalize-space(@for) = 't_takeout']",client);
 			log_system.info("Status of Click on Takeout "+Status);
-			log_system.info("******************** Verify Checkout for takeout ************************ ");			
+			log_system.info("******************** Verify Checkout for takeout ************************");			
 			Status=testcase.CheckoutForTakeout(client, City, "30",Address,String.valueOf(tax));
 			log_system.info("Status of checkout for Takeout "+Status);
-			log_system.info("******************** Reserve A Table ************************ ");
+			log_system.info("******************** Reserve A Table ************************");
 			Status=testcase.ReserveATable(client);
-			log_system.info("Status of Reserve A Table "+Status);			
-			log_system.info("******************** verify timeslot for reserve a table ************************ ");
+			log_system.info("Status of Reserve A Table "+Status);
+			log_system.info("******************** verify timeslot for reserve a table ************************");
 			Status=testcase.verifyTimeforReserveATable(client,City,"30");
 			log_system.info("Status of Time for Reserve A Table "+Status);
-			log_system.info("******************** Closing Browser ************************ ");
+			log_system.info("******************** Closing Browser ************************");
 			testcase.CloseBrowser(client);
 			log_system.info("Execution Complete for template "+ templateNumber);
 			log_system.info("Execution Complete for client "+ client);

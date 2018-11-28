@@ -39,7 +39,7 @@ public class action_checkout extends global_variables{
 			int count =0;
 			for(WebElement inputs: all_input)
 			{
-				if(!inputs.getAttribute("name").contains("instructions[]"))				
+				if(!inputs.getAttribute("name").contains("instructions[]") && inputs.isEnabled())				
 				inputs.clear();
 				count++;
 			}
@@ -657,8 +657,32 @@ public class action_checkout extends global_variables{
 																																	else
 																																	{
 																																		ActiveTimeSlot=ActiveTimeSlot(TimeSlot,actualtime,city);
-																																		String DisplayedTime=Driver.findElement(By.xpath("//p[normalize-space(@class) = 'subtitle_first y-expectedTime']")).getText().split("at")[1].trim();				
-																																		if(ActiveTimeSlot.contains(DisplayedTime))
+																																		
+																																		if(ActiveTimeSlot!=null)
+																																		{
+																																			String DisplayedTime=Driver.findElement(By.xpath("//p[normalize-space(@class) = 'subtitle_first y-expectedTime']")).getText().split("at")[1].trim();				
+																																			if(ActiveTimeSlot.contains(DisplayedTime))
+																																			{
+																																				JavascriptExecutor js = (JavascriptExecutor)Driver;
+																																				js.executeScript("window.scrollTo(0,500)");
+																																				if(common_action.Click(Driver.findElement(By.xpath("//a[normalize-space(@class) = 'ubtn blackbtn'] | //a[normalize-space(@class) = 't-edit_order_link ubtn blackbtn']")))==1)
+																																				{
+																																					Status=1;
+																																				}
+																																				else
+																																				{
+																																					errorLog.add("Edit button is not working");
+																																					log_system.error("Edit button is not working");
+																																					
+																																				}
+																																			}
+																																			else
+																																			{
+																																				errorLog.add("Incorrect takeout time is appearing on the screen");
+																																				log_system.error("Incorrect takeout time is appearing on the screen");
+																																			}
+																																		}
+																																		else
 																																		{
 																																			JavascriptExecutor js = (JavascriptExecutor)Driver;
 																																			js.executeScript("window.scrollTo(0,500)");
@@ -673,11 +697,7 @@ public class action_checkout extends global_variables{
 																																				
 																																			}
 																																		}
-																																		else
-																																		{
-																																			errorLog.add("Incorrect takeout time is appearing on the screen");
-																																			log_system.error("Incorrect takeout time is appearing on the screen");
-																																		}
+																																		
 																																	}
 																																}
 																																else
@@ -1743,7 +1763,7 @@ public class action_checkout extends global_variables{
 		{
 		case "New York":
 		{
-			calendar.add(Calendar.HOUR,-9);
+			calendar.add(Calendar.HOUR,-10);
 			calendar.add(Calendar.MINUTE,-30);
 			break;
 		}
